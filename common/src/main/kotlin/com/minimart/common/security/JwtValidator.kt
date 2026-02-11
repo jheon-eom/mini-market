@@ -1,0 +1,57 @@
+package com.minimart.common.security
+
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Keys
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.stereotype.Component
+import java.util.*
+import javax.crypto.SecretKey
+
+/**
+ * JWT 검증 전용 컴포넌트
+ * 모든 마이크로서비스에서 공유하여 사용
+ * 토큰 생성은 account-service에서만 담당
+ */
+@Component
+class JwtValidator(
+    private val jwtProperties: JwtProperties
+) {
+    private val secretKey: SecretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
+
+    fun validateToken(token: String): Boolean {
+        return try {
+            val claims = parseClaims(token)
+            !claims.expiration.before(Date())
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun getAuthentication(token: String): Authentication {
+        val claims = parseClaims(token)
+        val customerId = claims.subject
+
+        // 역할(role) 정보가 있다면 추출, 없으면 기본값 사용
+        val roles = claims.get("roles", List::class.java)?.map {
+            SimpleGrantedAuthority(it.toString())
+        } ?: listOf(SimpleGrantedAuthority("ROLE_CUSTOMER"))
+
+        return UsernamePasswordAuthenticationToken(customerId, token, roles)
+    }
+
+    private fun parseClaims(token: String): Claims {
+        return try {
+            Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .body
+        } catch (e: ExpiredJwtException) {
+            e.claims
+        }
+    }
+}

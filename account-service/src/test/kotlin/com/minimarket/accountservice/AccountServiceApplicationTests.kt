@@ -1,13 +1,12 @@
-package org.example.minimarket
+package com.minimarket.accountservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class MiniMarketApplicationTests {
+class AccountServiceApplicationTests {
 
     @Test
     fun contextLoads() {
     }
-
 }
