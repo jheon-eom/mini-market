@@ -4,5 +4,5 @@ import com.minimarket.accountservice.application.dto.AuthToken
 
 interface AuthProvider {
 
-    fun generate(customerId: Long, email: String): AuthToken
+    fun generate(userId: Long, email: String, role: String): AuthToken
 }

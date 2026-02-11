@@ -33,14 +33,14 @@ class JwtValidator(
 
     fun getAuthentication(token: String): Authentication {
         val claims = parseClaims(token)
-        val customerId = claims.subject
+        val userId = claims.subject
 
         // 역할(role) 정보가 있다면 추출, 없으면 기본값 사용
-        val roles = claims.get("roles", List::class.java)?.map {
+        val role = claims.get("role", List::class.java)?.map {
             SimpleGrantedAuthority(it.toString())
-        } ?: listOf(SimpleGrantedAuthority("ROLE_CUSTOMER"))
+        } ?: listOf(SimpleGrantedAuthority("CUSTOMER"))
 
-        return UsernamePasswordAuthenticationToken(customerId, token, roles)
+        return UsernamePasswordAuthenticationToken(userId, token, role)
     }
 
     private fun parseClaims(token: String): Claims {

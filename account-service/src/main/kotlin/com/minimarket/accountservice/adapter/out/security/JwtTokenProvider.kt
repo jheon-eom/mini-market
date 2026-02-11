@@ -21,20 +21,21 @@ class JwtTokenProvider(
 ) : AuthProvider {
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 
-    override fun generate(customerId: Long, email: String): AuthToken {
+    override fun generate(userId: Long, email: String, role: String): AuthToken {
         val now = Date()
 
         val accessToken = Jwts.builder()
-            .setSubject(customerId.toString())
+            .setSubject(userId.toString())
             .claim("email", email)
             .claim("type", "access")
+            .claim("role", listOf(role))
             .setIssuedAt(now)
             .setExpiration(Date(now.time + jwtProperties.accessTokenValidity))
             .signWith(secretKey, SignatureAlgorithm.HS256)
             .compact()
 
         val refreshToken = Jwts.builder()
-            .setSubject(customerId.toString())
+            .setSubject(userId.toString())
             .claim("type", "refresh")
             .setIssuedAt(now)
             .setExpiration(Date(now.time + jwtProperties.refreshTokenValidity))

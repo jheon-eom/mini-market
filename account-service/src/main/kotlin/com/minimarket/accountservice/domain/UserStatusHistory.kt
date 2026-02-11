@@ -11,18 +11,18 @@ import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "customer_status_history")
-class CustomerStatusHistory(
+@Table(name = "user_status_history")
+class UserStatusHistory(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(name = "customer_id", nullable = false, updatable = false)
-    val customerId: Long,
+    @Column(name = "user_id", nullable = false, updatable = false)
+    val userId: Long,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, updatable = false)
-    val status: CustomerStatus,
+    val status: UserStatus,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),

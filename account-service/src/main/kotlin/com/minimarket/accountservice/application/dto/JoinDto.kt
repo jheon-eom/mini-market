@@ -1,11 +1,14 @@
 package com.minimarket.accountservice.application.dto
 
-data class CustomerJoinCommand(
+import com.minimarket.accountservice.domain.UserRole
+
+data class JoinCommand(
     val email: String,
     val password: String,
+    val role: UserRole,
 )
 
-data class CustomerJoinResult(
+data class JoinResult(
     val id: Long,
     val accessToken: String,
     val refreshToken: String,

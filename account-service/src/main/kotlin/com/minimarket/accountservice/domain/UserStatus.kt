@@ -1,7 +1,6 @@
 package com.minimarket.accountservice.domain
 
-enum class CustomerStatus {
+enum class UserStatus {
     ACTIVE,
-    SUSPENDED,
     DELETED
 }
