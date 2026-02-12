@@ -13,6 +13,7 @@ class User(
     @Column(nullable = false, unique = true, length = 255)
     val email: String,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 255)
     val role: UserRole = UserRole.CUSTOMER,
 

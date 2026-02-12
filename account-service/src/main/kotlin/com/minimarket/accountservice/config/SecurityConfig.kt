@@ -24,9 +24,12 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .csrf { it.disable() }
+            .formLogin { it.disable() }
+            .httpBasic { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorize ->
                 authorize
+                    .requestMatchers(HttpMethod.GET,  "/health").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/accounts").permitAll()
                     .anyRequest().authenticated()
             }

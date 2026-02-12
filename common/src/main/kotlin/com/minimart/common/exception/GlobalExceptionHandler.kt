@@ -4,8 +4,9 @@ import com.minimart.common.dto.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestControllerAdvice
 
-@ControllerAdvice
+@RestControllerAdvice
 class GlobalExceptionHandler {
     private val logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
@@ -18,6 +19,16 @@ class GlobalExceptionHandler {
         return ApiResponse.fail(
             code = ex.code,
             reason = ex.reason
+        )
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun exception(ex: Exception): ApiResponse {
+        logger.warn("Exception occurred", ex)
+
+        return ApiResponse.fail(
+            code = "INTERNAL_SERVER_ERROR",
+            reason = ex.message
         )
     }
 }

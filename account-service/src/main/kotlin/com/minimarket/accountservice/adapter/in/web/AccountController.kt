@@ -3,7 +3,9 @@ package com.minimarket.accountservice.adapter.`in`.web
 import com.minimarket.accountservice.adapter.`in`.web.dto.JoinRequest
 import com.minimarket.accountservice.adapter.`in`.web.dto.JoinResponse
 import com.minimarket.accountservice.application.port.`in`.JoinUseCase
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -13,7 +15,7 @@ class AccountController(
     private val joinUseCase: JoinUseCase,
 ) {
     @PostMapping
-    fun join(request: JoinRequest): JoinResponse {
+    fun join(@RequestBody request: JoinRequest): JoinResponse {
         val result = joinUseCase.join(request.toCommand())
 
         return JoinResponse(
