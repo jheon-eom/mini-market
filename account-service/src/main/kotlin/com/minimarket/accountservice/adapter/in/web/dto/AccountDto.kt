@@ -1,6 +1,7 @@
 package com.minimarket.accountservice.adapter.`in`.web.dto
 
 import com.minimarket.accountservice.application.dto.JoinCommand
+import com.minimarket.accountservice.application.dto.LoginCommand
 import com.minimarket.accountservice.domain.UserRole
 
 data class JoinRequest(
@@ -22,3 +23,15 @@ data class JoinResponse(
     val accessToken: String,
     val refreshToken: String
 )
+
+data class LoginRequest(
+    val email: String,
+    val password: String
+) {
+    fun toCommand(): LoginCommand {
+        return LoginCommand(
+            email = this.email,
+            password = this.password
+        )
+    }
+}

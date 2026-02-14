@@ -13,3 +13,8 @@ data class JoinResult(
     val accessToken: String,
     val refreshToken: String,
 )
+
+data class LoginCommand(
+    val email: String,
+    val password: String,
+)

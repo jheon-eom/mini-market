@@ -4,7 +4,7 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +15,7 @@ class User(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 255)
-    val role: UserRole = UserRole.CUSTOMER,
+    val role: UserRole,
 
     @Column(name = "password_hash", nullable = false, length = 255)
     val passwordHash: String,

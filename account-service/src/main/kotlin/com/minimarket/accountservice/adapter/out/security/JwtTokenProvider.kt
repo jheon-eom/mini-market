@@ -2,6 +2,7 @@ package com.minimarket.accountservice.adapter.out.security
 
 import com.minimarket.accountservice.application.dto.AuthToken
 import com.minimarket.accountservice.application.port.out.AuthProvider
+import com.minimarket.accountservice.domain.User
 import com.minimart.common.security.JwtProperties
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -21,21 +22,21 @@ class JwtTokenProvider(
 ) : AuthProvider {
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 
-    override fun generate(userId: Long, email: String, role: String): AuthToken {
+    override fun generate(user: User): AuthToken {
         val now = Date()
 
         val accessToken = Jwts.builder()
-            .setSubject(userId.toString())
-            .claim("email", email)
+            .setSubject(user.id.toString())
+            .claim("email", user.email)
             .claim("type", "access")
-            .claim("role", listOf(role))
+            .claim("role", listOf(user.role.name))
             .setIssuedAt(now)
             .setExpiration(Date(now.time + jwtProperties.accessTokenValidity))
             .signWith(secretKey, SignatureAlgorithm.HS256)
             .compact()
 
         val refreshToken = Jwts.builder()
-            .setSubject(userId.toString())
+            .setSubject(user.id.toString())
             .claim("type", "refresh")
             .setIssuedAt(now)
             .setExpiration(Date(now.time + jwtProperties.refreshTokenValidity))
