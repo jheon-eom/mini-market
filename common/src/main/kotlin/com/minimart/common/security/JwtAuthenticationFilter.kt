@@ -21,15 +21,11 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        try {
-            val token = resolveToken(request)
+        val token = resolveToken(request)
 
-            if (token != null && jwtValidator.validateToken(token)) {
-                val authentication = jwtValidator.getAuthentication(token)
-                SecurityContextHolder.getContext().authentication = authentication
-            }
-        } catch (e: Exception) {
-            logger.error("JWT authentication failed", e)
+        if (token != null && jwtValidator.validateToken(token)) {
+            val authentication = jwtValidator.getAuthentication(token)
+            SecurityContextHolder.getContext().authentication = authentication
         }
 
         filterChain.doFilter(request, response)

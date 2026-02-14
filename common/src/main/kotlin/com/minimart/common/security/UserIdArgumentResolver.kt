@@ -24,10 +24,10 @@ class UserIdArgumentResolver : HandlerMethodArgumentResolver {
         val authentication = SecurityContextHolder.getContext().authentication
             ?: throw IllegalStateException("No authentication information found.")
 
-        // JWT에서 추출한 userId는 principal에 저장되어 있음
-        val userId = authentication.principal as? String
+        // JWT에서 추출한 id는 principal에 저장되어 있음
+        val id = authentication.principal as? String
             ?: throw IllegalStateException("Not a valid principal type.")
 
-        return userId.toLong()
+        return id.toLong()
     }
 }
