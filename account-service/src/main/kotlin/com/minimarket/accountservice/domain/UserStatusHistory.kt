@@ -24,6 +24,9 @@ class UserStatusHistory(
     @Column(name = "status", nullable = false, updatable = false)
     val status: UserStatus,
 
+    @Column(name = "reason", updatable = false)
+    val reason: String?,
+
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
 

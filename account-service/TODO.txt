@@ -1,0 +1,12 @@
+# 2026-02-14
+DONE:
+- AccountService 테스트 코드 작성
+- JWT 토큰 테스트 코드 작성
+TODO:
+- 리프레시 토큰 저장 및 검증 로직 구현
+- 유저 상태 저장 및 관리 로직 구현
+ABOUT:
+- 현재 account-service 모듈 외에 account-admin이나 account-batch가 필요할 경우 어떻게 설계?
+  서로 다른 모듈로 구현하면 domain 모델이 중복 코드가 될 것이고, 하나의 모듈로 구현하면 성능 문제가 발생할 수 있음
+- domain 모델과 repository 영역을 분리하여 모듈화?
+  domain 모델과 repository 영역을 분리하면 다른 도메인 영역에서 침범할 수 있게 된다.
