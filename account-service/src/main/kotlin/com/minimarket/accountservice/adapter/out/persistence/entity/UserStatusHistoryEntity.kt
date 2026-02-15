@@ -1,0 +1,29 @@
+package com.minimarket.accountservice.adapter.out.persistence.entity
+
+import com.minimarket.accountservice.domain.UserStatus
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+
+@Entity
+@Table(name = "user_status_history")
+class UserStatusHistoryEntity(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+
+    @Column(name = "user_id", nullable = false, updatable = false)
+    val userId: Long,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, updatable = false)
+    val status: UserStatus,
+
+    @Column(name = "reason", updatable = false)
+    val reason: String?,
+): BaseEntity()

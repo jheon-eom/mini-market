@@ -1,8 +1,7 @@
 package com.minimarket.accountservice.application.port.out
 
 import com.minimarket.accountservice.domain.User
-import org.springframework.data.jpa.repository.JpaRepository
 
-interface UserRepository: JpaRepository<User, Long> {
+interface UserFinder {
     fun findByEmail(email: String): User?
 }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/health")
 class HealthCheckController {
-
     @GetMapping
     fun healthCheck(): String {
         return "Account Service is up and running!"

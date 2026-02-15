@@ -6,7 +6,6 @@ import com.minimarket.accountservice.application.dto.JoinResult
 import com.minimarket.accountservice.application.dto.LoginCommand
 
 interface AccountUseCase {
-
     fun join(command: JoinCommand): JoinResult
 
     fun login(command: LoginCommand): AuthToken

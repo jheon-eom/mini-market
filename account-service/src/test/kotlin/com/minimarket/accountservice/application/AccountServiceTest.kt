@@ -2,7 +2,8 @@ package com.minimarket.accountservice.application
 
 import com.minimarket.accountservice.adapter.out.security.JwtTokenProvider
 import com.minimarket.accountservice.application.dto.JoinCommand
-import com.minimarket.accountservice.application.port.out.UserRepository
+import com.minimarket.accountservice.application.port.out.UserFinder
+import com.minimarket.accountservice.application.port.out.UserWriter
 import com.minimarket.accountservice.domain.AccountApiException
 import com.minimarket.accountservice.domain.User
 import com.minimarket.accountservice.domain.UserRole
@@ -20,16 +21,17 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @DataJpaTest
 class AccountServiceTest {
-
-    @Autowired private lateinit var userRepository: UserRepository
-
-    @Autowired private lateinit var jwtValidator: JwtValidator
-
+    @Autowired
+    private lateinit var userWriter: UserWriter
+    @Autowired
+    private lateinit var userFinder: UserFinder
+    @Autowired
+    private lateinit var jwtValidator: JwtValidator
     private val passwordEncoder: PasswordEncoder = BCryptPasswordEncoder()
-
     private val accountService: AccountService by lazy {
         AccountService(
-            userRepository = userRepository,
+            userWriter = userWriter,
+            userFinder = userFinder,
             passwordEncoder = BCryptPasswordEncoder(),
             authProvider = JwtTokenProvider(
                 JwtProperties(
@@ -109,7 +111,7 @@ class AccountServiceTest {
             role = UserRole.CUSTOMER
         )
 
-        userRepository.save(user)
+        userWriter.save(user)
 
         return email
     }
