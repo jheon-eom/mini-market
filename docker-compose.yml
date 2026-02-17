@@ -22,8 +22,26 @@ services:
       timeout: 5s
       retries: 5
 
+  account-redis:
+    image: redis:7-alpine
+    container_name: account-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - account-redis-data:/data
+    networks:
+      - mini-market-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   account-db-data:
+    driver: local
+  account-redis-data:
     driver: local
 
 networks:

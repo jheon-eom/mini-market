@@ -1,37 +1,45 @@
 package com.minimarket.accountservice.application
 
+import com.minimarket.accountservice.adapter.out.persistence.jpa.UserRepository
 import com.minimarket.accountservice.adapter.out.security.JwtTokenProvider
 import com.minimarket.accountservice.application.dto.JoinCommand
 import com.minimarket.accountservice.application.port.out.UserFinder
+import com.minimarket.accountservice.application.port.out.UserStatusHistoryWriter
 import com.minimarket.accountservice.application.port.out.UserWriter
 import com.minimarket.accountservice.domain.AccountApiException
+import com.minimarket.accountservice.domain.Email
 import com.minimarket.accountservice.domain.User
 import com.minimarket.accountservice.domain.UserRole
 import com.minimart.common.exception.TokenExpiredException
 import com.minimart.common.security.JwtProperties
 import com.minimart.common.security.JwtValidator
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 @DataJpaTest
 class AccountServiceTest {
-    @Autowired
-    private lateinit var userWriter: UserWriter
-    @Autowired
-    private lateinit var userFinder: UserFinder
-    @Autowired
-    private lateinit var jwtValidator: JwtValidator
+    @Autowired private lateinit var userWriter: UserWriter
+    @Autowired private lateinit var userFinder: UserFinder
+    @Autowired private lateinit var userStatusHistoryWriter: UserStatusHistoryWriter
+    @Autowired private lateinit var jwtValidator: JwtValidator
+    @Autowired private lateinit var userRepository: UserRepository
+    @MockitoBean private lateinit var redisTemplate: RedisTemplate<String, Any>
+    @MockitoBean private lateinit var refreshTokenService: RefreshTokenService
     private val passwordEncoder: PasswordEncoder = BCryptPasswordEncoder()
     private val accountService: AccountService by lazy {
         AccountService(
             userWriter = userWriter,
             userFinder = userFinder,
+            userStatusHistoryWriter = userStatusHistoryWriter,
+            refreshTokenService = refreshTokenService,
             passwordEncoder = BCryptPasswordEncoder(),
             authProvider = JwtTokenProvider(
                 JwtProperties(
@@ -43,9 +51,13 @@ class AccountServiceTest {
         )
     }
 
+    @BeforeEach
+    fun setup() {
+        userRepository.deleteAll()
+    }
+
     @Test
-    @DisplayName("중복된 이메일로 가입 시도 시 실패한다")
-    fun `duplicate email will fail to join`() {
+    fun `중복된 이메일로 가입 시도 시 실패한다`() {
         // given
         val duplicatedEmail = saveDuplicateUser()
 
@@ -63,8 +75,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입에 성공하면 id, accessToken, refreshToken을 반환한다.")
-    fun `join successfully returns id, accessToken, refreshToken`() {
+    fun `회원가입에 성공하면 id, accessToken, refreshToken을 반환한다`() {
         // given
         val command = JoinCommand(
             email = "test@example.com",
@@ -82,8 +93,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("accessToken의 유효기간이 지나면 TokenExpiredException 예외가 발생한다.")
-    fun `expired accessToken will TokenExpiredException`() {
+    fun `accessToken의 유효기간이 지나면 TokenExpiredException 예외가 발생한다`() {
         // given
         val command = JoinCommand(
             email = "test@example.com",
@@ -94,7 +104,7 @@ class AccountServiceTest {
         val result = accountService.join(command)
 
         // when
-        Thread.sleep(2) // accessToken 유효기간보다 1초 더 기다림
+        Thread.sleep(2) // accessToken 유효기간보다 1ms 더 기다림
 
         // then
         assertThrows(TokenExpiredException::class.java) {
@@ -106,7 +116,7 @@ class AccountServiceTest {
         val email = "test@example.com"
 
         val user = User(
-            email = email,
+            email = Email(email),
             passwordHash = passwordEncoder.encode("password123")!!,
             role = UserRole.CUSTOMER
         )

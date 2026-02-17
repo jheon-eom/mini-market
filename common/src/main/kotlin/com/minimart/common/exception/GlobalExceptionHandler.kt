@@ -26,20 +26,30 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TokenExpiredException::class)
-    fun handleTokenExpiredException(ex: Exception): ResponseEntity<ApiResponse> {
+    fun handleTokenExpiredException(): ResponseEntity<ApiResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
             ApiResponse.fail(
                 code = "ACCESS_TOKEN_EXPIRED",
-                reason = ex.message
+                reason = null
             )
         )
     }
 
     @ExceptionHandler(TokenAuthenticationException::class)
-    fun handleTokenAuthenticationException(ex: Exception): ResponseEntity<ApiResponse> {
+    fun handleTokenAuthenticationException(): ResponseEntity<ApiResponse> {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
             ApiResponse.fail(
                 code = "TOKEN_AUTHENTICATION_FAILED",
+                reason = null
+            )
+        )
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(ex: Exception): ResponseEntity<ApiResponse> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ApiResponse.fail(
+                code = "ILLEGAL_ARGUMENT",
                 reason = ex.message
             )
         )

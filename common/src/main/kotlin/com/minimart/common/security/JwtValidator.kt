@@ -48,9 +48,9 @@ class JwtValidator(
                 .parseClaimsJws(token)
                 .body
         } catch (e: ExpiredJwtException) {
-            throw TokenExpiredException(e)
+            throw TokenExpiredException()
         } catch (e: Exception) {
-            throw TokenAuthenticationException(e)
+            throw TokenAuthenticationException()
         }
     }
 }

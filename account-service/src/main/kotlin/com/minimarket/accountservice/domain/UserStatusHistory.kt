@@ -1,11 +1,11 @@
 package com.minimarket.accountservice.domain
 
 class UserStatusHistory(
-    val id: Long? = null,
+    val id: UserStatusHistoryId? = null,
 
-    val userId: Long,
+    val userId: UserId,
 
     val status: UserStatus,
 
-    val reason: String?,
+    val reason: String? = "",
 )

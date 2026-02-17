@@ -1,4 +1,4 @@
-package com.minimarket.accountservice.adapter.out.persistence
+package com.minimarket.accountservice.adapter.out.persistence.jpa
 
 import com.minimarket.accountservice.adapter.out.persistence.entity.UserEntity
 import com.minimarket.accountservice.application.port.out.UserWriter

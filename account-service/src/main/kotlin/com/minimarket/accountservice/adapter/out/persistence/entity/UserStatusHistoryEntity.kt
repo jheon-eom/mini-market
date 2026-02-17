@@ -1,6 +1,7 @@
 package com.minimarket.accountservice.adapter.out.persistence.entity
 
 import com.minimarket.accountservice.domain.UserStatus
+import com.minimarket.accountservice.domain.UserStatusHistory
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -26,4 +27,14 @@ class UserStatusHistoryEntity(
 
     @Column(name = "reason", updatable = false)
     val reason: String?,
-): BaseEntity()
+): BaseEntity() {
+    companion object {
+        fun toDomain(userStatusHistory: UserStatusHistory): UserStatusHistoryEntity {
+            return UserStatusHistoryEntity(
+                userId = userStatusHistory.userId.value,
+                status = userStatusHistory.status,
+                reason = userStatusHistory.reason
+            )
+        }
+    }
+}

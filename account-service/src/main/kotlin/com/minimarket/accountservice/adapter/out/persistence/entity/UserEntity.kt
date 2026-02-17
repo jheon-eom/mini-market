@@ -1,6 +1,8 @@
 package com.minimarket.accountservice.adapter.out.persistence.entity
 
+import com.minimarket.accountservice.domain.Email
 import com.minimarket.accountservice.domain.User
+import com.minimarket.accountservice.domain.UserId
 import com.minimarket.accountservice.domain.UserRole
 import com.minimarket.accountservice.domain.UserStatus
 import jakarta.persistence.*
@@ -29,7 +31,7 @@ class UserEntity(
     companion object {
         fun toEntity(user: User): UserEntity {
             return UserEntity(
-                email = user.email,
+                email = user.email.value,
                 role = user.role,
                 passwordHash = user.passwordHash,
                 status = user.status,
@@ -38,8 +40,8 @@ class UserEntity(
 
         fun toDomain(userEntity: UserEntity): User {
             return User(
-                id = userEntity.id!!,
-                email = userEntity.email,
+                id = UserId(userEntity.id!!),
+                email = Email(userEntity.email),
                 role = userEntity.role,
                 passwordHash = userEntity.passwordHash,
                 status = userEntity.status,

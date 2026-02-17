@@ -1,9 +1,9 @@
 package com.minimarket.accountservice.domain
 
 class User(
-    val id: Long? = null,
+    val id: UserId? = null,
 
-    val email: String,
+    val email: Email,
 
     val role: UserRole,
 
