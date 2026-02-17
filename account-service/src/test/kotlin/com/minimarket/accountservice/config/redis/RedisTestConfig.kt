@@ -1,5 +1,6 @@
-package com.minimarket.accountservice.config
+package com.minimarket.accountservice.config.redis
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
@@ -19,7 +20,7 @@ class RedisTestConfig {
         return LettuceConnectionFactory(host, port).apply { afterPropertiesSet() }
     }
 
-    @Bean
+    @Bean("testRedisTemplate")
     fun redisTemplate(cf: LettuceConnectionFactory): RedisTemplate<String, Any> =
         RedisTemplate<String, Any>().apply {
             connectionFactory = cf

@@ -7,7 +7,7 @@ import com.minimarket.accountservice.application.port.out.AuthProvider
 import com.minimarket.accountservice.application.port.out.RefreshTokenFinder
 import com.minimarket.accountservice.application.port.out.UserFinder
 import com.minimarket.accountservice.config.RedisConfig
-import com.minimarket.accountservice.config.RedisTestConfig
+import com.minimarket.accountservice.config.redis.RedisTestConfig
 import com.minimarket.accountservice.domain.Email
 import com.minimarket.accountservice.domain.User
 import com.minimarket.accountservice.domain.UserId
@@ -27,11 +27,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(
     classes = [
-        RedisTestConfig::class,
         RefreshTokenService::class,
         RefreshTokenRedisWriter::class,
         RefreshTokenRedisFinder::class,
-        RedisConfig::class
+        RedisTestConfig::class,
+        RedisConfig::class,
     ]
 )
 class RefreshTokenServiceTest {
