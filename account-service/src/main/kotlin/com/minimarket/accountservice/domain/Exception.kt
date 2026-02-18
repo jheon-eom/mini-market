@@ -2,8 +2,7 @@ package com.minimarket.accountservice.domain
 
 import com.minimart.common.exception.DomainException
 
-// 도메인 영역에서 외부 모듈로의 의존성이 존재하는데 괜찮을까?
-class AccountApiException(error: ErrorCode): DomainException(error.code, error.reason)
+class CategoryApiException(error: ErrorCode): DomainException(error.code, error.reason)
 
 enum class ErrorCode(
     val code: String,

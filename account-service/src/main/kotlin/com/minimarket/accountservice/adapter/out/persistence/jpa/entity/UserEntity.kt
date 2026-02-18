@@ -1,4 +1,4 @@
-package com.minimarket.accountservice.adapter.out.persistence.entity
+package com.minimarket.accountservice.adapter.out.persistence.jpa.entity
 
 import com.minimarket.accountservice.domain.Email
 import com.minimarket.accountservice.domain.User

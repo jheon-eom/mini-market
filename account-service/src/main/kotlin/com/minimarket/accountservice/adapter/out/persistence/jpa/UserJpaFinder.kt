@@ -1,9 +1,8 @@
 package com.minimarket.accountservice.adapter.out.persistence.jpa
 
-import com.minimarket.accountservice.adapter.out.persistence.entity.UserEntity
+import com.minimarket.accountservice.adapter.out.persistence.jpa.entity.UserEntity
 import com.minimarket.accountservice.application.port.out.UserFinder
 import com.minimarket.accountservice.domain.AccountApiException
-import com.minimarket.accountservice.domain.ErrorCode
 import com.minimarket.accountservice.domain.ErrorCode.USER_NOT_FOUND
 import com.minimarket.accountservice.domain.User
 import com.minimarket.accountservice.domain.UserId

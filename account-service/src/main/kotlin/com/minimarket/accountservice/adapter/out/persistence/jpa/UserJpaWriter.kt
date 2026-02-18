@@ -1,6 +1,6 @@
 package com.minimarket.accountservice.adapter.out.persistence.jpa
 
-import com.minimarket.accountservice.adapter.out.persistence.entity.UserEntity
+import com.minimarket.accountservice.adapter.out.persistence.jpa.entity.UserEntity
 import com.minimarket.accountservice.application.port.out.UserWriter
 import com.minimarket.accountservice.domain.User
 import org.springframework.stereotype.Repository

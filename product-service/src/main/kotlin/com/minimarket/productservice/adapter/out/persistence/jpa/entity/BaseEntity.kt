@@ -1,4 +1,4 @@
-package com.minimarket.accountservice.adapter.out.persistence.entity
+package com.minimarket.productservice.adapter.out.persistence.jpa.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners
@@ -13,12 +13,12 @@ import java.time.LocalDateTime
 abstract class BaseEntity(
     @Column(name = "is_deleted", nullable = false)
     var isDeleted: Boolean = false,
-) {
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime? = null
-}
+)

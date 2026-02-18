@@ -1,6 +1,6 @@
 package com.minimarket.accountservice.adapter.out.persistence.jpa
 
-import com.minimarket.accountservice.adapter.out.persistence.entity.UserStatusHistoryEntity
+import com.minimarket.accountservice.adapter.out.persistence.jpa.entity.UserStatusHistoryEntity
 import com.minimarket.accountservice.application.port.out.UserStatusHistoryWriter
 import com.minimarket.accountservice.domain.UserId
 import com.minimarket.accountservice.domain.UserStatusHistory
