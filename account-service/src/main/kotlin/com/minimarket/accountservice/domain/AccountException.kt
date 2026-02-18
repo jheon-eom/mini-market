@@ -2,7 +2,7 @@ package com.minimarket.accountservice.domain
 
 import com.minimart.common.exception.DomainException
 
-class CategoryApiException(error: ErrorCode): DomainException(error.code, error.reason)
+class AccountApiException(error: ErrorCode): DomainException(error.code, error.reason)
 
 enum class ErrorCode(
     val code: String,
