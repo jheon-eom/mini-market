@@ -54,7 +54,7 @@ class AccountController(
         val userId = request.getHeader("X-UserId")
             ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
 
-        val result = refreshTokenUseCase.refresh(refreshToken, UserId(userId.toLong()))
+        val result = refreshTokenUseCase.refresh(UserId(userId.toLong()), refreshToken)
 
         return ResponseEntity.ok(
             AuthToken(

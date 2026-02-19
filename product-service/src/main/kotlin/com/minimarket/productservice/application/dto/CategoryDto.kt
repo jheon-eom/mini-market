@@ -1,9 +1,19 @@
 package com.minimarket.productservice.application.dto
 
-data class CreateCategoryCommand(
+data class CategoryCreateCommand(
     val name: String
 )
 
-data class CreateCategoryResult(
+data class CategoryCreateResult(
     val id: Long,
+)
+
+data class CategoryUpdateCommand(
+    val id: Long,
+    val name: String
+)
+
+data class CategoryUpdateResult(
+    val id: Long,
+    val updatedName: String
 )

@@ -31,8 +31,10 @@ class AccountServiceTest {
     @Autowired private lateinit var userStatusHistoryWriter: UserStatusHistoryWriter
     @Autowired private lateinit var jwtValidator: JwtValidator
     @Autowired private lateinit var userRepository: UserRepository
+
     @MockitoBean private lateinit var redisTemplate: RedisTemplate<String, Any>
     @MockitoBean private lateinit var refreshTokenService: RefreshTokenService
+
     private val passwordEncoder: PasswordEncoder = BCryptPasswordEncoder()
     private val accountService: AccountService by lazy {
         AccountService(

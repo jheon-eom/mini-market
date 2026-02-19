@@ -5,5 +5,5 @@ import com.minimarket.accountservice.domain.UserId
 
 interface UserFinder {
     fun findByEmail(email: String): User?
-    fun findById(userId: UserId): User
+    fun findById(userId: UserId): User?
 }

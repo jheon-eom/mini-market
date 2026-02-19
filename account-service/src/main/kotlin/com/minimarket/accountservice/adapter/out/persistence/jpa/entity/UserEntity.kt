@@ -6,9 +6,11 @@ import com.minimarket.accountservice.domain.UserId
 import com.minimarket.accountservice.domain.UserRole
 import com.minimarket.accountservice.domain.UserStatus
 import jakarta.persistence.*
+import org.hibernate.annotations.SQLRestriction
 
 @Entity
 @Table(name = "\"user\"")
+@SQLRestriction("is_deleted = false")
 class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

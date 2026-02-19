@@ -4,4 +4,6 @@ import com.minimarket.productservice.domain.Category
 
 interface CategoryWriter {
     fun save(category: Category): Category
+
+    fun update(updateCategory: Category): Category
 }

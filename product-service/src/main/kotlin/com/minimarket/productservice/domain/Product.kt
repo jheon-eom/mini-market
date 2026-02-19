@@ -8,6 +8,4 @@ class Product(
     val price: Price,
 
     val stock: Int,
-
-    val category: Category
 )

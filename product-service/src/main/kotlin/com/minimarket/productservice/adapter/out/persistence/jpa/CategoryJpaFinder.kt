@@ -13,4 +13,13 @@ class CategoryJpaFinder(
         return categoryRepository.findByName(name)
             ?.let { Category(id = CategoryId(it.id!!), name = it.name) }
     }
+
+    override fun findById(id: CategoryId): Category? {
+        return categoryRepository.findById(id.value)
+            .orElse(null)
+            ?.let { Category(id = CategoryId(it.id!!), name = it.name) }
+    }
+
+    override fun findAll(): List<Category> = categoryRepository.findAll()
+        .map { Category(id = CategoryId(it.id!!), name = it.name) }
 }

@@ -2,8 +2,6 @@ package com.minimarket.accountservice.adapter.out.persistence.jpa
 
 import com.minimarket.accountservice.adapter.out.persistence.jpa.entity.UserEntity
 import com.minimarket.accountservice.application.port.out.UserFinder
-import com.minimarket.accountservice.domain.AccountApiException
-import com.minimarket.accountservice.domain.ErrorCode.USER_NOT_FOUND
 import com.minimarket.accountservice.domain.User
 import com.minimarket.accountservice.domain.UserId
 import org.springframework.stereotype.Repository
@@ -19,7 +17,7 @@ class UserJpaFinder(
 
     override fun findById(userId: UserId): User {
         return userRepository.findById(userId.value)
-            .orElseThrow { AccountApiException(USER_NOT_FOUND) }
+            .orElse(null)
             .let { UserEntity.toDomain(it) }
     }
 }

@@ -6,10 +6,11 @@ import com.minimarket.accountservice.application.port.out.AuthProvider
 import com.minimarket.accountservice.application.port.out.RefreshTokenFinder
 import com.minimarket.accountservice.application.port.out.RefreshTokenWriter
 import com.minimarket.accountservice.application.port.out.UserFinder
+import com.minimarket.accountservice.domain.AccountApiException
+import com.minimarket.accountservice.domain.ErrorCode.*
 import com.minimarket.accountservice.domain.User
 import com.minimarket.accountservice.domain.RefreshToken
 import com.minimarket.accountservice.domain.UserId
-import com.minimart.common.exception.TokenAuthenticationException
 import com.minimart.common.exception.TokenExpiredException
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime.now
@@ -29,11 +30,16 @@ class RefreshTokenService(
         ).let { refreshTokenWriter.save(it) }
     }
 
-    override fun refresh(refreshToken: String, userId: UserId): AuthToken {
+    override fun refresh(userId: UserId, refreshToken: String): AuthToken {
         if (!refreshTokenFinder.validate(refreshToken, userId)) throw TokenExpiredException()
 
-        return userFinder.findById(userId)
-            .let { authProvider.generate(it) }
-            .also { save(userFinder.findById(userId), it.refreshToken) }
+        userFinder.findById(userId)
+            ?.let {
+                val authToken = authProvider.generate(it)
+                save(it, authToken.refreshToken)
+                return authToken
+            }
+
+        throw AccountApiException(NOT_FOUND)
     }
 }

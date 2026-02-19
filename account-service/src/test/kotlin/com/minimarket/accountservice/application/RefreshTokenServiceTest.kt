@@ -1,12 +1,13 @@
 package com.minimarket.accountservice.application
 
+import com.minimarket.accountservice.adapter.out.persistence.jpa.UserJpaFinder
+import com.minimarket.accountservice.adapter.out.persistence.jpa.UserJpaWriter
 import com.minimarket.accountservice.adapter.out.persistence.redis.RefreshTokenData
 import com.minimarket.accountservice.adapter.out.persistence.redis.RefreshTokenRedisFinder
 import com.minimarket.accountservice.adapter.out.persistence.redis.RefreshTokenRedisWriter
 import com.minimarket.accountservice.application.port.out.AuthProvider
 import com.minimarket.accountservice.application.port.out.RefreshTokenFinder
-import com.minimarket.accountservice.application.port.out.UserFinder
-import com.minimarket.accountservice.config.RedisConfig
+import com.minimarket.accountservice.application.port.out.UserWriter
 import com.minimarket.accountservice.config.redis.RedisTestConfig
 import com.minimarket.accountservice.domain.Email
 import com.minimarket.accountservice.domain.User
@@ -17,29 +18,26 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@ExtendWith(SpringExtension::class)
-@ContextConfiguration(
-    classes = [
-        RefreshTokenService::class,
-        RefreshTokenRedisWriter::class,
-        RefreshTokenRedisFinder::class,
-        RedisTestConfig::class,
-        RedisConfig::class,
-    ]
+@DataJpaTest
+@Import(
+    RefreshTokenService::class,
+    RefreshTokenRedisWriter::class,
+    RefreshTokenRedisFinder::class,
+    UserJpaFinder::class,
+    UserJpaWriter::class,
+    RedisTestConfig::class,
 )
 class RefreshTokenServiceTest {
     @Autowired private lateinit var refreshTokenService: RefreshTokenService
     @Autowired private lateinit var refreshTokenFinder: RefreshTokenFinder
-    @Autowired private lateinit var redisTemplate: RedisTemplate<String, Any>
-    @MockitoBean private lateinit var userFinder: UserFinder
-    @MockitoBean private lateinit var authProvider: AuthProvider
+    @Autowired private lateinit var testRedisTemplate: RedisTemplate<String, Any>
+    @Autowired private lateinit var userWriter: UserWriter
+    @Autowired private lateinit var authProvider: AuthProvider
 
     private val userId = UserId(1L)
     private val user = User(
@@ -51,7 +49,7 @@ class RefreshTokenServiceTest {
 
     @AfterEach
     fun cleanup() {
-        redisTemplate.connectionFactory?.connection?.serverCommands()?.flushAll()
+        testRedisTemplate.connectionFactory?.connection?.serverCommands()?.flushAll()
     }
 
     @Test
@@ -64,7 +62,7 @@ class RefreshTokenServiceTest {
 
         // then: 키가 존재하고 TTL이 설정되어 있는지 확인
         val key = RefreshTokenData.generateKey(userId.value)
-        val ttl = redisTemplate.getExpire(key)
+        val ttl = testRedisTemplate.getExpire(key)
 
         assertThat(ttl).isGreaterThan(0)
 
@@ -79,7 +77,22 @@ class RefreshTokenServiceTest {
 
         // when & then
         assertThrows(TokenExpiredException::class.java) {
-            refreshTokenService.refresh(nonExistentToken, userId)
+            refreshTokenService.refresh(userId, nonExistentToken)
         }
+    }
+
+    @Test
+    fun `유효한 refreshToken으로 refresh 호출 시 새로운 AuthToken이 반환된다`() {
+        // given
+        val token = "sample-refresh-token"
+        val savedUser = userWriter.save(user)
+
+        // when
+        refreshTokenService.save(savedUser, token)
+        val authToken = refreshTokenService.refresh(savedUser.id!!, token)
+
+        // then
+        assertThat(authToken).isNotNull
+        assertThat { authToken.refreshToken != token }
     }
 }
