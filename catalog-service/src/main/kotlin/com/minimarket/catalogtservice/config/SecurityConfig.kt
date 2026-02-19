@@ -1,4 +1,4 @@
-package com.minimarket.accountservice.config
+package com.minimarket.catalogtservice.config
 
 import com.minimart.common.security.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
@@ -30,7 +30,6 @@ class SecurityConfig(
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers(HttpMethod.GET,  "/health").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/accounts/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

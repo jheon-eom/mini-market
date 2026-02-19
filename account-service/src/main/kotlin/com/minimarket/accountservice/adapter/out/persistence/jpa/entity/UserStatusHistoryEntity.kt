@@ -13,6 +13,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.SQLRestriction
 
 @Entity
+@Table(name = "user_status_history")
 @SQLRestriction("is_deleted = false and status = 'ACTIVE'")
 class UserStatusHistoryEntity(
     @Id
