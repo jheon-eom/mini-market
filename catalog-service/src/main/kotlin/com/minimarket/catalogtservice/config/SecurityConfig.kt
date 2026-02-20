@@ -30,6 +30,7 @@ class SecurityConfig(
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers(HttpMethod.GET,  "/health").permitAll()
+                    .requestMatchers(HttpMethod.GET,  "/api/v1/products").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

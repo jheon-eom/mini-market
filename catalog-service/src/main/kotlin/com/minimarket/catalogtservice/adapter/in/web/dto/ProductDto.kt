@@ -2,6 +2,7 @@ package com.minimarket.catalogtservice.adapter.`in`.web.dto
 
 import com.minimarket.catalogtservice.application.dto.ProductRegisterCommand
 import com.minimarket.catalogtservice.domain.CategoryId
+import com.minimarket.catalogtservice.domain.ProductSearch
 import java.math.BigDecimal
 
 data class ProductRegisterRequest(
@@ -25,3 +26,19 @@ data class ProductRegisterRequest(
 data class ProductRegisterResponse(
     val id: Long,
 )
+
+data class ProductSearchRequest(
+    val categoryIds: List<Long>? = null,
+    val keyword: String? = null,
+    val productIdKey: Long? = null,
+    val size: Int = 10
+) {
+    fun toSearch(): ProductSearch {
+        return ProductSearch(
+            categoryIds = categoryIds?.map { CategoryId(it) },
+            keyword = keyword,
+            productIdKey = productIdKey,
+            size = size
+        )
+    }
+}

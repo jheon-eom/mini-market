@@ -6,6 +6,7 @@ plugins {
     id("io.spring.dependency-management")
     // 별도로 필요한 플러그인 세팅
     kotlin("plugin.jpa") version "1.9.25"
+    kotlin("kapt")
 }
 
 allOpen {
@@ -20,6 +21,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    // QueryDSL
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
 
     runtimeOnly("com.mysql:mysql-connector-j")
 
