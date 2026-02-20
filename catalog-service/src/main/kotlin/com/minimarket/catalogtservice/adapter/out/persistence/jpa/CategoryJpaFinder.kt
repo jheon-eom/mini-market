@@ -2,7 +2,9 @@ package com.minimarket.catalogtservice.adapter.out.persistence.jpa
 
 import com.minimarket.catalogtservice.application.out.CategoryFinder
 import com.minimarket.catalogtservice.domain.Category
+import com.minimarket.catalogtservice.domain.CategoryApiException
 import com.minimarket.catalogtservice.domain.CategoryId
+import com.minimarket.catalogtservice.domain.ErrorCode
 import org.springframework.stereotype.Component
 
 @Component
@@ -22,4 +24,14 @@ class CategoryJpaFinder(
 
     override fun findAll(): List<Category> = categoryRepository.findAll()
         .map { Category(id = CategoryId(it.id!!), name = it.name) }
+
+    override fun findAllByIds(ids: List<CategoryId>): List<Category> {
+        val categories = categoryRepository.findAllById(ids.map { it.value })
+
+        if (categories.isEmpty()) {
+            throw CategoryApiException(ErrorCode.NOT_FOUND)
+        }
+
+        return categories.map { Category(id = CategoryId(it.id!!), name = it.name) }
+    }
 }

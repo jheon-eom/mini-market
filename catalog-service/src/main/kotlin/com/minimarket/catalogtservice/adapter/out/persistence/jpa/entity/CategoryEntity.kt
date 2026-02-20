@@ -13,8 +13,4 @@ class CategoryEntity(
 
     @Column(unique = true, nullable = false)
     var name: String
-): BaseEntity() {
-    fun update(newName: String) {
-        this.name = newName
-    }
-}
+): BaseEntity()

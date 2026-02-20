@@ -1,11 +1,13 @@
 package com.minimarket.catalogtservice.domain
 
 class Product(
-    val id: ProductId,
+    val id: ProductId? = null,
 
-    val name: String,
+    var name: String,
 
     val price: Price,
 
     val stock: Int,
+
+    val categories: List<Category>
 )
