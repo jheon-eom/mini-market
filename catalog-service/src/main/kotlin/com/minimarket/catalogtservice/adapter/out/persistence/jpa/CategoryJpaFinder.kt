@@ -4,7 +4,7 @@ import com.minimarket.catalogtservice.application.out.CategoryFinder
 import com.minimarket.catalogtservice.domain.Category
 import com.minimarket.catalogtservice.domain.CategoryApiException
 import com.minimarket.catalogtservice.domain.CategoryId
-import com.minimarket.catalogtservice.domain.ErrorCode
+import com.minimarket.catalogtservice.domain.CategoryErrorCode
 import org.springframework.stereotype.Component
 
 @Component
@@ -29,7 +29,7 @@ class CategoryJpaFinder(
         val categories = categoryRepository.findAllById(ids.map { it.value })
 
         if (categories.isEmpty()) {
-            throw CategoryApiException(ErrorCode.NOT_FOUND)
+            throw CategoryApiException(CategoryErrorCode.NOT_FOUND)
         }
 
         return categories.map { Category(id = CategoryId(it.id!!), name = it.name) }

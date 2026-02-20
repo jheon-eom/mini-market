@@ -5,6 +5,8 @@ import com.minimarket.catalogtservice.adapter.`in`.web.dto.ProductRegisterRespon
 import com.minimarket.catalogtservice.adapter.`in`.web.dto.ProductSearchRequest
 import com.minimarket.catalogtservice.application.`in`.ProductReader
 import com.minimarket.catalogtservice.application.`in`.ProductUseCase
+import com.minimarket.catalogtservice.domain.Product
+import com.minimarket.catalogtservice.domain.ProductId
 import com.minimarket.catalogtservice.domain.ProductSearchResult
 import com.minimart.common.security.interceptor.RequireAdmin
 import org.springframework.http.HttpStatus
@@ -29,5 +31,10 @@ class ProductController(
     @GetMapping
     fun search(request: ProductSearchRequest): ResponseEntity<ProductSearchResult> {
         return ResponseEntity.ok().body(productReader.search(request.toSearch()))
+    }
+
+    @GetMapping("/{id}")
+    fun get(@PathVariable id: Long): ResponseEntity<Product> {
+        return ResponseEntity.ok().body(productReader.get(ProductId(id)))
     }
 }

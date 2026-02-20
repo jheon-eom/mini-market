@@ -5,7 +5,7 @@ import com.minimarket.catalogtservice.application.out.CategoryWriter
 import com.minimarket.catalogtservice.domain.Category
 import com.minimarket.catalogtservice.domain.CategoryApiException
 import com.minimarket.catalogtservice.domain.CategoryId
-import com.minimarket.catalogtservice.domain.ErrorCode.*
+import com.minimarket.catalogtservice.domain.CategoryErrorCode.*
 import org.springframework.stereotype.Component
 
 @Component
