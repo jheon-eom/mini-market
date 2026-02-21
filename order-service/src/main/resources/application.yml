@@ -1,0 +1,44 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: order-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3308/minimarket_order_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: order_user
+    password: order_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+    open-in-view: false
+
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6381
+#      password:
+#      timeout: 3000ms
+#      lettuce:
+#        pool:
+#          max-active: 8
+#          max-idle: 8
+#          min-idle: 0
+#          max-wait: -1ms
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+
+jwt:
+  secret: 1fed56241e80f07310227d1529dd928087620bf836eed6802d1843197db83501
+  access-token-validity: 3600000  # 1시간
+  refresh-token-validity: 604800000  # 7일

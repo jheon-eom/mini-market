@@ -1,4 +1,4 @@
-package com.minimarket.catalogtservice.config
+package com.minimarket.orderservice.config
 
 import com.minimart.common.security.interceptor.AdminAuthorizationInterceptor
 import org.springframework.context.annotation.Configuration

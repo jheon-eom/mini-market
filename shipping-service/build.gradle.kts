@@ -1,22 +1,27 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.spring")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    kotlin("plugin.jpa") version "1.9.25"
 }
 
-group = "com.minimarket"
-version = "0.0.1-SNAPSHOT"
-
-repositories {
-    mavenCentral()
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-}
+    api(project(":common"))
 
-kotlin {
-    jvmToolchain(17)
-}
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-tasks.test {
-    useJUnitPlatform()
+    runtimeOnly("com.mysql:mysql-connector-j")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testRuntimeOnly("com.h2database:h2")
 }
