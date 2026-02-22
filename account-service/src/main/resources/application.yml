@@ -5,6 +5,16 @@ spring:
   application:
     name: account-service
 
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: account-service-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+    producer:
+      acks: all
+      retries: 3
+
   datasource:
     url: jdbc:mysql://localhost:3306/minimarket_account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: account_user
