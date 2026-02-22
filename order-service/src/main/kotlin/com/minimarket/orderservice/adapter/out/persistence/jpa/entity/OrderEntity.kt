@@ -1,0 +1,45 @@
+package com.minimarket.orderservice.adapter.out.persistence.jpa.entity
+
+import com.minimarket.orderservice.domain.Order
+import com.minimarket.orderservice.domain.OrderId
+import com.minimarket.orderservice.domain.OrderLine
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
+import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+
+@Entity
+@Table(name = "`order`")
+class OrderEntity(
+    @Id
+    @Column(nullable = false, updatable = false, unique = true)
+    @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
+    val id: UUID? = null,
+
+    @Column(nullable = false, updatable = false)
+    val buyerId: Long,
+
+    @Column(nullable = false)
+    var amount: BigDecimal,
+
+    @Column(nullable = false)
+    var status: String,
+
+    @Column(nullable = false, updatable = false)
+    val orderedAt: LocalDateTime,
+): BaseEntity() {
+    fun toDomain(orderLines: List<OrderLine>): Order {
+        return Order(
+            id = OrderId(id.toString()),
+            buyerId = com.minimarket.orderservice.domain.BuyerId(buyerId),
+            lines = orderLines,
+            amount = amount,
+            status = com.minimarket.orderservice.domain.OrderStatus.valueOf(status),
+            orderedAt = orderedAt
+        )
+    }
+}
