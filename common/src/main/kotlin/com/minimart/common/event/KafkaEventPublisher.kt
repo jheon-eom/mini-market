@@ -17,20 +17,16 @@ class KafkaEventPublisher(
 ): EventPublisher {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun publish(topic: String, event: DomainEvent) {
-        publish(topic, event.eventId, event)
-    }
-
-    override fun publish(topic: String, key: String, event: DomainEvent) {
+    override fun publish(topic: String, partitionKey: String, event: DomainEvent) {
         val future: CompletableFuture<SendResult<String, Any>> =
-            kafkaTemplate.send(topic, key, event)
+            kafkaTemplate.send(topic, partitionKey, event)
 
         future.whenComplete { result, ex ->
             if (ex == null) {
                 logger.info(
                     "이벤트 발행 성공 - Topic: {}, Key: {}, EventType: {}, Partition: {}, Offset: {}",
                     topic,
-                    key,
+                    partitionKey,
                     event.eventType,
                     result.recordMetadata.partition(),
                     result.recordMetadata.offset()
@@ -39,7 +35,7 @@ class KafkaEventPublisher(
                 logger.error(
                     "이벤트 발행 실패 - Topic: {}, Key: {}, EventType: {}",
                     topic,
-                    key,
+                    partitionKey,
                     event.eventType,
                     ex
                 )

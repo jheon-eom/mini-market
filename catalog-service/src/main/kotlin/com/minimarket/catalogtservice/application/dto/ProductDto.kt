@@ -21,3 +21,18 @@ data class ProductRegisterCommand(
 data class ProductRegisterResult(
     val id: Long
 )
+
+data class ProductReserveCommand(
+    val orderId: String,
+    val items: List<ProductReserveItem>
+)
+
+data class ProductReserveItem(
+    val productId: Long,
+    val quantity: Int
+)
+
+data class ProductReserveResult(
+    val success: Boolean,
+    val message: String? = null
+)

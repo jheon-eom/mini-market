@@ -17,10 +17,10 @@ data class OrderCreated(
 
     val totalAmount: BigDecimal,
 
-    val orderLines: List<OrderLineCreated>
+    val orderLines: List<OrderLine>
 ): DomainEvent
 
-data class OrderLineCreated(
+data class OrderLine(
     val productId: Long,
 
     val quantity: Int,
@@ -31,11 +31,11 @@ data class OrderLineCreated(
 )
 
 data class InventoryReserved(
-    override val eventId: String,
+    override val eventId: String = UUID.randomUUID().toString(),
 
-    override val occurredAt: LocalDateTime,
+    override val occurredAt: LocalDateTime = LocalDateTime.now(),
 
-    override val eventType: String,
+    override val eventType: String = EventTopic.INVENTORY_RESERVED,
 
     val orderId: String,
 ): DomainEvent

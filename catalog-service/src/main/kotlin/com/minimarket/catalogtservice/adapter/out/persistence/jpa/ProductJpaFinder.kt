@@ -58,4 +58,9 @@ class ProductJpaFinder(
                 }
             )
         }
+
+    override fun findStockById(productId: Long): Int =
+        productRepository.findById(productId)
+            .orElseThrow { ProductApiException(NOT_FOUND) }
+            .stock
 }

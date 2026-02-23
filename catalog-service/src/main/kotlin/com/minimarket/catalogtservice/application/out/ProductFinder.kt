@@ -9,4 +9,6 @@ interface ProductFinder {
     fun findAllBySearch(search: ProductSearch): ProductSearchResult
 
     fun findById(id: ProductId): Product
+
+    fun findStockById(productId: Long): Int
 }

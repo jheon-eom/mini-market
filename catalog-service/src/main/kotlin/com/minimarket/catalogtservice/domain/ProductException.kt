@@ -16,5 +16,10 @@ enum class ProductErrorCode(
     NOT_FOUND(
         "PRODUCT-002",
         "존재하지 않는 상품입니다."
+    ),
+
+    NOT_ENOUGH_STOCK(
+        "PRODUCT-003",
+        "재고가 부족합니다."
     )
 }

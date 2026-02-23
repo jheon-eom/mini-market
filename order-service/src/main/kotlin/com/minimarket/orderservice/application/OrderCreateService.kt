@@ -11,7 +11,6 @@ import com.minimarket.orderservice.domain.OrderStatus
 import com.minimart.common.event.EventPublisher
 import com.minimart.common.event.EventTopic
 import com.minimart.common.event.OrderCreated
-import com.minimart.common.event.OrderLineCreated
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -46,7 +45,7 @@ class OrderCreateService(
             buyerId = savedOrder.buyerId.value,
             totalAmount = savedOrder.amount,
             orderLines = savedOrder.lines.map {
-                OrderLineCreated(
+                com.minimart.common.event.OrderLine(
                     productId = it.productId,
                     quantity = it.quantity,
                     price = it.price,
@@ -55,7 +54,11 @@ class OrderCreateService(
             }
         )
 
-        eventPublisher.publish(EventTopic.ORDER_CREATED, event)
+        eventPublisher.publish(
+            EventTopic.ORDER_CREATED,
+            savedOrder.id.value,
+            event
+        )
 
         return OrderCreateResult(
             orderId = savedOrder.id.value

@@ -1,9 +1,5 @@
 package com.minimart.common.event
 
-/**
- * Kafka 토픽 상수 정의
- * 모든 서비스에서 공통으로 사용할 토픽 이름을 정의합니다
- */
 object EventTopic {
     const val ORDER_CREATED = "order.created" // 주문 생성
 
