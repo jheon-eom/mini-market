@@ -48,8 +48,6 @@ data class InventoryFailed(
     override val eventType: String = EventTopic.INVENTORY_FAILED,
 
     val orderId: String,
-
-    val reason: String,
 ): DomainEvent
 
 data class PaymentProcessed(

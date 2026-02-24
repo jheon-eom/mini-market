@@ -23,6 +23,7 @@ data class ProductRegisterResult(
 )
 
 data class ProductReserveCommand(
+    val eventId: String,
     val orderId: String,
     val items: List<ProductReserveItem>
 )
