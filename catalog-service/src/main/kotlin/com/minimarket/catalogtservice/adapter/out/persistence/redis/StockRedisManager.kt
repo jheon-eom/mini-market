@@ -77,7 +77,7 @@ class StockRedisManager(
         val key = STOCK_KEY_PREFIX + productId
 
         redisTemplate.execute(
-            RedisScript.of(INIT_STOCK_SCRIPT, Int::class.java),
+            RedisScript.of(INIT_STOCK_SCRIPT, Long::class.java),
             listOf(key),
             stock.toString()
         )
@@ -87,19 +87,19 @@ class StockRedisManager(
         val key = STOCK_KEY_PREFIX + productId
 
         val result = redisTemplate.execute(
-            RedisScript.of(DECREASE_STOCK_SCRIPT, Int::class.java),
+            RedisScript.of(DECREASE_STOCK_SCRIPT, Long::class.java),
             listOf(key),
             quantity.toString()
         )
 
-        return result?: -1
+        return result?.toInt() ?: -1
     }
 
     override fun add(productId: Long, quantity: Int) {
         val key = STOCK_KEY_PREFIX + productId
 
         redisTemplate.execute(
-            RedisScript.of(INCREASE_STOCK_SCRIPT, Int::class.java),
+            RedisScript.of(INCREASE_STOCK_SCRIPT, Long::class.java),
             listOf(key),
             quantity.toString()
         )

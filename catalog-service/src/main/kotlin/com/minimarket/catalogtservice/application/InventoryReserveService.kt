@@ -77,7 +77,6 @@ class InventoryReserveService(
     private fun reserveStock(item: ProductReserveItem) {
         val remainingStock = stockManager.decrease(item.productId, item.quantity)
         if (remainingStock < 0) {
-            stockManager.add(item.productId, item.quantity)
             throw ProductApiException(NOT_ENOUGH_STOCK)
         }
     }
