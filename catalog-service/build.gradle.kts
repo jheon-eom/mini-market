@@ -22,6 +22,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    // Spring Retry (버전은 Spring Boot BOM에서 관리)
+    implementation("org.springframework.retry:spring-retry:2.0.5")
+    implementation("org.springframework:spring-aspects")
+
     // Kafka (kapt 처리를 위해 명시적으로 추가)
     implementation("org.springframework.kafka:spring-kafka")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

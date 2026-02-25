@@ -9,9 +9,11 @@ import com.minimarket.catalogtservice.application.out.ProductFinder
 import com.minimarket.catalogtservice.application.out.StockManager
 import com.minimarket.catalogtservice.domain.ProductApiException
 import com.minimarket.catalogtservice.domain.ProductErrorCode.NOT_ENOUGH_STOCK
+import com.minimarket.catalogtservice.domain.event.InventoryReserveCompletedEvent
 import com.minimart.common.event.EventTopic
-import com.minimart.common.exception.OutBoxWriteException
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProductReserveService(
@@ -19,8 +21,10 @@ class ProductReserveService(
     private val productFinder: ProductFinder,
     private val eventOutBoxFinder: EventOutBoxFinder,
     private val eventOutBoxWriter: EventOutBoxWriter,
+    private val eventPublisher: ApplicationEventPublisher,
 ): ProductReserveUseCase {
 
+    @Transactional
     override fun reserve(command: ProductReserveCommand) {
         // 멱등성 보장: 이미 같은 주문 ID로 이벤트가 존재하면 예약 로직을 수행하지 않음
         if (eventOutBoxFinder.existsByEventId(command.eventId)) {
@@ -39,23 +43,31 @@ class ProductReserveService(
                 rollbackStocks(reservedItems)
 
                 // 예약 실패 이벤트 아웃박스에 저장
-                try {
-                    writeOutBox(command, EventTopic.INVENTORY_FAILED)
-                    return
-                } catch (e: Exception) {
-                    throw OutBoxWriteException(e)
-                }
+                writeOutBox(command, EventTopic.INVENTORY_FAILED)
+
+                // Spring Event 발행 (트랜잭션 커밋 후 Kafka로 발행됨)
+                eventPublisher.publishEvent(
+                    InventoryReserveCompletedEvent(
+                        eventId = command.eventId,
+                        eventType = EventTopic.INVENTORY_FAILED,
+                        orderId = command.orderId
+                    )
+                )
+                return
             }
         }
 
         // 예약 성공 이벤트 아웃박스에 저장
-        try {
-            writeOutBox(command, EventTopic.INVENTORY_RESERVED)
-        } catch (e: Exception) {
-            // 이벤트 저장 실패 시 롤백
-            rollbackStocks(reservedItems)
-            throw OutBoxWriteException(e)
-        }
+        writeOutBox(command, EventTopic.INVENTORY_RESERVED)
+
+        // Spring Event 발행 (트랜잭션 커밋 후 Kafka로 발행됨)
+        eventPublisher.publishEvent(
+            InventoryReserveCompletedEvent(
+                eventId = command.eventId,
+                eventType = EventTopic.INVENTORY_RESERVED,
+                orderId = command.orderId
+            )
+        )
     }
 
     fun checkAndSetProductStock(productId: Long) {

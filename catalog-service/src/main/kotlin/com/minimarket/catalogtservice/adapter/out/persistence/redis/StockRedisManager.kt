@@ -104,4 +104,25 @@ class StockRedisManager(
             quantity.toString()
         )
     }
+
+    override fun getAllStocks(): Map<Long, Int> {
+        val pattern = "$STOCK_KEY_PREFIX*"
+        val keys = redisTemplate.keys(pattern)
+
+        return keys.mapNotNull { key ->
+            val productId = key.substringAfter(STOCK_KEY_PREFIX).toLongOrNull()
+            val stock = redisTemplate.opsForValue().get(key)?.toString()?.toIntOrNull()
+
+            if (productId != null && stock != null) {
+                productId to stock
+            } else {
+                null
+            }
+        }.toMap()
+    }
+
+    override fun getStock(productId: Long): Int? {
+        val key = STOCK_KEY_PREFIX + productId
+        return redisTemplate.opsForValue().get(key)?.toString()?.toIntOrNull()
+    }
 }
