@@ -1,7 +1,5 @@
-package com.minimart.common.event
+package com.minimart.common.event.kafka
 
-import com.minimart.common.event.DomainEvent
-import com.minimart.common.event.EventPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult

@@ -1,4 +1,4 @@
-package com.minimart.common.event
+package com.minimart.common.event.kafka
 
 import java.math.BigDecimal
 import java.time.LocalDateTime

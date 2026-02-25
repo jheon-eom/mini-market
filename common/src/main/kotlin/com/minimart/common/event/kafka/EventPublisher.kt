@@ -1,4 +1,4 @@
-package com.minimart.common.event
+package com.minimart.common.event.kafka
 
 /**
  * 이벤트 발행 인터페이스

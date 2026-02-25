@@ -1,4 +1,4 @@
-package com.minimart.common.event
+package com.minimart.common.event.kafka
 
 import java.time.LocalDateTime
 
@@ -7,8 +7,6 @@ import java.time.LocalDateTime
  */
 interface DomainEvent {
     val eventId: String
-
     val occurredAt: LocalDateTime
-
     val eventType: String
 }

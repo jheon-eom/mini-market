@@ -1,4 +1,4 @@
-package com.minimart.common.event
+package com.minimart.common.event.kafka
 
 object EventTopic {
     const val ORDER_CREATED = "order.created" // 주문 생성
