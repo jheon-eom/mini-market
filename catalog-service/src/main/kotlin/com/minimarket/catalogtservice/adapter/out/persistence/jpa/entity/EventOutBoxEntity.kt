@@ -25,5 +25,9 @@ class EventOutBoxEntity(
     val relationId: String,
 
     @Column(name = "processed_at")
-    val processedAt: LocalDateTime = LocalDateTime.now()
-)
+    var processedAt: LocalDateTime? = null
+) {
+    fun markProcessed() {
+        this.processedAt = LocalDateTime.now()
+    }
+}

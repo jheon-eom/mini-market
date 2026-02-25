@@ -15,6 +15,7 @@ import com.minimart.common.exception.OutBoxWriteException
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class InventoryReserveService(
@@ -27,10 +28,14 @@ class InventoryReserveService(
 
     @Transactional
     override fun reserve(command: ProductReserveCommand) {
+        // 이벤트 키 멱등성 검사
         if (eventOutBoxFinder.existsByEventId(command.eventId)) {
             return
         }
 
+        //TODO: 레디스와 디비 작업을 최대한 원자성을 보장
+        // 스프링 트랜잭션 이벤트 리스너를 커밋 이후로 실행
+        // 처리되지 않은 아웃박스 이벤트를 주기적으로 처리하는 백그라운드 작업을 별도로 운영
         val reservedItems = mutableListOf<ProductReserveItem>()
         command.items.forEach {
             try {
@@ -87,7 +92,8 @@ class InventoryReserveService(
         eventOutBoxWriter.write(
             eventId = command.eventId,
             eventType = eventType,
-            command.orderId
+            command.orderId,
+            processedAt = LocalDateTime.now() // Redis와 원자성을 맞추기 때문에 이벤트 발생 시점으로 기록한다.
         )
     }
 
