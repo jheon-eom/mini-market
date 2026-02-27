@@ -37,6 +37,8 @@ class InventoryReserveCompletedListener(
             }
 
         orderStatusUpdateUseCase.updateToReserved(command)
+
+        acknowledgment.acknowledge()
     }
 
     @KafkaListener(
@@ -60,5 +62,7 @@ class InventoryReserveCompletedListener(
             }
 
         orderStatusUpdateUseCase.updateToReserveFail(command)
+
+        acknowledgment.acknowledge()
     }
 }
