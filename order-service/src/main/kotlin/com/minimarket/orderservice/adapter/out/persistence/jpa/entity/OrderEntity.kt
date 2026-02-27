@@ -32,6 +32,16 @@ class OrderEntity(
     @Column(nullable = false, updatable = false)
     val orderedAt: LocalDateTime,
 ): BaseEntity() {
+    fun toDomainWithoutOrderLines(): Order {
+        return Order(
+            id = OrderId(id.toString()),
+            buyerId = com.minimarket.orderservice.domain.BuyerId(buyerId),
+            lines = emptyList(),
+            amount = amount,
+            status = com.minimarket.orderservice.domain.OrderStatus.valueOf(status),
+            orderedAt = orderedAt
+        )
+    }
     fun toDomain(orderLines: List<OrderLine>): Order {
         return Order(
             id = OrderId(id.toString()),

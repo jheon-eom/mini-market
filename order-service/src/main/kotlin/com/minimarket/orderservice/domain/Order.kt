@@ -12,7 +12,11 @@ class Order(
 
     val amount: BigDecimal,
 
-    val status: OrderStatus,
+    var status: OrderStatus,
 
     val orderedAt: LocalDateTime,
-)
+) {
+    fun reserve() {
+        status = OrderStatus.RESERVED
+    }
+}

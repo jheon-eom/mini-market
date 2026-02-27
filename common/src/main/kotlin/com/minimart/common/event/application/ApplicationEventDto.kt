@@ -1,5 +1,7 @@
 package com.minimart.common.event.application
 
+import java.math.BigDecimal
+
 interface ApplicationEvent {
     val eventId: String
 }
@@ -9,4 +11,10 @@ data class InventoryReserveCompleteEvent(
     val orderId: String,
     val isSuccess: Boolean,
     val failedItems: List<String> = emptyList()
+): ApplicationEvent
+
+data class OrderStatusUpdatedEvent(
+    override val eventId: String,
+    val orderId: String,
+    val orderAmount: BigDecimal,
 ): ApplicationEvent

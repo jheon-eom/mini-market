@@ -33,4 +33,8 @@ class OrderJpaWriter(
 
         return savedOrderEntity.toDomain(savedOrderLinesEntity.map { it.toDomain() })
     }
+
+    override fun update(order: Order) {
+        orderRepository.updateById(order.id!!.value)
+    }
 }
