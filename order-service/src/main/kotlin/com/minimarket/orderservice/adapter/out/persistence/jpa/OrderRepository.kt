@@ -9,7 +9,4 @@ import org.springframework.data.repository.query.Param
 import java.util.UUID
 
 interface OrderRepository: JpaRepository<OrderEntity, UUID> {
-    @Modifying
-    @Query("UPDATE OrderEntity o SET o.status = :status WHERE o.id = :id")
-    fun updateById(@Param("id") id: String, @Param("status") status: OrderStatus)
 }

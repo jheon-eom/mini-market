@@ -42,7 +42,7 @@ class OrderStatusUpdateService(
         orderWriter.update(order)
 
         eventOutBoxWriter.save(
-            command.orderId,
+            command.eventId,
             command.eventType,
             command.orderId
         )

@@ -5,9 +5,11 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.hibernate.annotations.SQLRestriction
 import java.time.LocalDateTime
 
 @Entity
+@SQLRestriction("is_deleted = false")
 class EventOutBoxEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +26,4 @@ class EventOutBoxEntity(
 
     @Column(name = "processed_at")
     var processedAt: LocalDateTime? = null
-)
+): BaseEntity()

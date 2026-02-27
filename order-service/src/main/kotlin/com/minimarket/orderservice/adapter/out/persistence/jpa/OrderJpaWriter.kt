@@ -4,11 +4,13 @@ import com.minimarket.orderservice.adapter.out.persistence.jpa.entity.OrderEntit
 import com.minimarket.orderservice.adapter.out.persistence.jpa.entity.OrderLineEntity
 import com.minimarket.orderservice.application.out.OrderWriter
 import com.minimarket.orderservice.domain.Order
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 class OrderJpaWriter(
-    private val orderRepository: OrderRepository,
+    private val repository: OrderRepository,
     private val orderLineRepository: OrderLineRepository
 ): OrderWriter {
     override fun save(order: Order): Order {
@@ -17,7 +19,7 @@ class OrderJpaWriter(
             amount = order.amount,
             status = order.status.name,
             orderedAt = order.orderedAt
-        ).let { orderRepository.save(it) }
+        ).let { repository.save(it) }
 
         val savedOrderLinesEntity = order.lines.map {
             OrderLineEntity(
@@ -35,6 +37,10 @@ class OrderJpaWriter(
     }
 
     override fun update(order: Order) {
-        orderRepository.updateById(order.id!!.value, order.status)
+        repository.findById(UUID.fromString(order.id!!.value))
+            .orElseThrow()
+            .apply {
+                this.status = order.status.name
+            }.let { repository.save(it) }
     }
 }
