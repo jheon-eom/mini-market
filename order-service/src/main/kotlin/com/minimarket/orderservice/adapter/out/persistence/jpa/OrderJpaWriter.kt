@@ -35,6 +35,6 @@ class OrderJpaWriter(
     }
 
     override fun update(order: Order) {
-        orderRepository.updateById(order.id!!.value)
+        orderRepository.updateById(order.id!!.value, order.status)
     }
 }

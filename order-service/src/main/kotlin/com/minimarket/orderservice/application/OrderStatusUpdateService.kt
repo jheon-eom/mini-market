@@ -1,5 +1,6 @@
 package com.minimarket.orderservice.application
 
+import com.minimarket.orderservice.adapter.`in`.event.OrderReserveFailedCommand
 import com.minimarket.orderservice.adapter.`in`.event.OrderReserveSuccessCommand
 import com.minimarket.orderservice.application.`in`.OrderStatusUpdateUseCase
 import com.minimarket.orderservice.application.out.EventOutBoxReader
@@ -7,6 +8,7 @@ import com.minimarket.orderservice.application.out.EventOutBoxWriter
 import com.minimarket.orderservice.application.out.OrderFinder
 import com.minimarket.orderservice.application.out.OrderWriter
 import com.minimart.common.event.application.OrderStatusUpdatedEvent
+import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,6 +21,8 @@ class OrderStatusUpdateService(
     private val eventOutBoxReader: EventOutBoxReader,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ): OrderStatusUpdateUseCase {
+    private val logger = LoggerFactory.getLogger(OrderStatusUpdateService::class.java)
+
     /**
      * 주문 상태를 예약 완료로 업데이트
      * 완료 이후 주문 예약 성공 이벤트 발행
@@ -26,6 +30,8 @@ class OrderStatusUpdateService(
      */
     @Transactional
     override fun updateToReserved(command: OrderReserveSuccessCommand) {
+        logger.info("Reserving order with id: ${command.orderId}")
+
         if (eventOutBoxReader.existByEventId(command.eventId)) {
             return
         }
@@ -48,5 +54,22 @@ class OrderStatusUpdateService(
                 order.amount
             )
         )
+    }
+
+    /**
+     * 주문 예약 실패
+     * 주문의 상태를 실패로 업데이트
+     */
+    override fun updateToReserveFail(command: OrderReserveFailedCommand) {
+        logger.info("Reserving order failed with id: ${command.orderId}")
+
+        if (eventOutBoxReader.existByEventId(command.eventId)) {
+            return
+        }
+
+        val order = orderFinder.findById(command.orderId)
+        order.reserveFail()
+
+        orderWriter.update(order)
     }
 }

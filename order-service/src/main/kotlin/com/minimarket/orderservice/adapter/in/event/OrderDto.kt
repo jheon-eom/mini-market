@@ -7,3 +7,11 @@ data class OrderReserveSuccessCommand(
 
     val orderId: String,
 )
+
+data class OrderReserveFailedCommand(
+    val eventId: String,
+
+    val eventType: String,
+
+    val orderId: String,
+)

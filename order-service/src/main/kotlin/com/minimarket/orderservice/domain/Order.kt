@@ -19,4 +19,8 @@ class Order(
     fun reserve() {
         status = OrderStatus.RESERVED
     }
+
+    fun reserveFail() {
+        status = OrderStatus.RESERVE_FAILED
+    }
 }

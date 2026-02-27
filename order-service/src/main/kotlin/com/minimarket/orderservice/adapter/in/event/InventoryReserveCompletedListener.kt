@@ -22,7 +22,7 @@ class InventoryReserveCompletedListener(
         containerFactory = "kafkaListenerContainerFactory"
     )
     @Retryable(
-        value = [OutBoxWriteException::class],
+        value = [Exception::class],
         maxAttempts = 3,
         backoff = Backoff(delay = 1000L, multiplier = 2.0)
     )
@@ -37,5 +37,28 @@ class InventoryReserveCompletedListener(
             }
 
         orderStatusUpdateUseCase.updateToReserved(command)
+    }
+
+    @KafkaListener(
+        topics = [EventTopic.INVENTORY_FAILED],
+        groupId = "\${spring.kafka.consumer.group-id}",
+        containerFactory = "kafkaListenerContainerFactory"
+    )
+    @Retryable(
+        value = [Exception::class],
+        maxAttempts = 3,
+        backoff = Backoff(delay = 1000L, multiplier = 2.0)
+    )
+    fun inventoryReserveFailListener(message: String, acknowledgment: Acknowledgment) {
+        val command = objectMapper.readValue(message, InventoryReserved::class.java)
+            .let {
+                OrderReserveFailedCommand(
+                    eventId = it.eventId,
+                    eventType = it.eventType,
+                    orderId = it.orderId
+                )
+            }
+
+        orderStatusUpdateUseCase.updateToReserveFail(command)
     }
 }
