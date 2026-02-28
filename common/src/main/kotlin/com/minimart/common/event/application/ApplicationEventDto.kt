@@ -16,5 +16,12 @@ data class InventoryReserveCompleteEvent(
 data class OrderStatusUpdatedEvent(
     override val eventId: String,
     val orderId: String,
+    val buyerId: Long,
     val orderAmount: BigDecimal,
+): ApplicationEvent
+
+data class PaymentProcessedEvent(
+    override val eventId: String,
+    val orderId: String,
+    val paymentId: String,
 ): ApplicationEvent

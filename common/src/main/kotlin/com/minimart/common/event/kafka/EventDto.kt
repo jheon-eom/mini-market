@@ -59,6 +59,8 @@ data class OrderReserved(
 
     val orderId: String,
 
+    val buyerId: Long,
+
     val orderAmount: BigDecimal,
 ): DomainEvent
 

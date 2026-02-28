@@ -51,6 +51,7 @@ class OrderStatusUpdateService(
             OrderStatusUpdatedEvent(
                 eventId = command.eventId,
                 orderId = command.orderId,
+                buyerId = order.buyerId.value,
                 order.amount
             )
         )
