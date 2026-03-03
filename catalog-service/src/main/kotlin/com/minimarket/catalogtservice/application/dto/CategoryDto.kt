@@ -17,3 +17,8 @@ data class CategoryUpdateResult(
     val id: Long,
     val updatedName: String
 )
+
+data class InventoryRollbackCommand(
+    val eventId: String,
+    val orderId: String
+)

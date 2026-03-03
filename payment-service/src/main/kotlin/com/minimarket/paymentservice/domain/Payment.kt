@@ -19,6 +19,7 @@ class Payment(
         if (this.orderAmount.compareTo(orderAmount) != 0) {
             throw PaymentApiException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT)
         }
+
         this.txId = txId
     }
 }

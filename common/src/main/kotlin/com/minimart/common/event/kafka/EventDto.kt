@@ -64,6 +64,18 @@ data class OrderReserved(
     val orderAmount: BigDecimal,
 ): DomainEvent
 
+data class OrderFailed(
+    override val eventId: String = UUID.randomUUID().toString(),
+
+    override val occurredAt: LocalDateTime = LocalDateTime.now(),
+
+    override val eventType: String = EventTopic.ORDER_FAILED,
+
+    val orderId: String,
+
+    val orderLines: List<OrderLine>
+): DomainEvent
+
 data class PaymentProcessed(
     override val eventId: String = UUID.randomUUID().toString(),
 
@@ -83,9 +95,7 @@ data class PaymentFailed(
 
     override val eventType: String = EventTopic.PAYMENT_FAILED,
 
-    val orderId: String,
-
-    val reason: String,
+    val orderId: String
 ): DomainEvent
 
 data class ShipmentCreated(

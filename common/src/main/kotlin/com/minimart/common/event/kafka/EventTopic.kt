@@ -9,6 +9,8 @@ object EventTopic {
 
     const val ORDER_RESERVED = "order.reserved" // 주문 예약 완료
 
+    const val ORDER_FAILED = "order.failed" // 주문 처리 실패
+
     const val PAYMENT_PROCESSED = "payment.processed" // 결제 처리 완료
 
     const val PAYMENT_FAILED = "payment.failed" // 결제 처리 실패

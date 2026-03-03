@@ -8,6 +8,7 @@ import com.minimarket.paymentservice.application.out.PaymentFinder
 import com.minimarket.paymentservice.application.out.PaymentWriter
 import com.minimarket.paymentservice.domain.PaymentApiException
 import com.minimarket.paymentservice.domain.PaymentErrorCode
+import com.minimart.common.event.application.PaymentFailedEvent
 import com.minimart.common.event.application.PaymentProcessedEvent
 import com.minimart.common.event.kafka.EventTopic
 import org.slf4j.LoggerFactory
@@ -33,22 +34,44 @@ class PaymentProcessService(
         // 결제 금액 검증
         val payment = paymentFinder.findByOrderId(command.orderId)
 
-        if (payment == null) {
-            logger.warn("[Payment] 결제 정보 없음: orderId = ${command.orderId}")
-            throw PaymentApiException(PaymentErrorCode.NOT_FOUND)
-        }
-
         try {
+            if (payment == null) {
+                logger.warn("[Payment] 결제 정보 없음: orderId = ${command.orderId}")
+                throw PaymentApiException(PaymentErrorCode.NOT_FOUND)
+            }
+
             payment.process(command.orderAmount, command.txId)
             paymentWriter.update(payment)
         } catch (e: PaymentApiException) {
-            logger.warn(
-                "[Payment] 결제 금액 검증 실패:" +
-                        " orderId = ${command.orderId}, " +
-                        "expected = ${payment.orderAmount}, " +
-                        "actual = ${command.orderAmount}"
+            if (e.code == PaymentErrorCode.INVALID_PAYMENT_AMOUNT.code) {
+                logger.warn(
+                    "[Payment] 결제 금액 검증 실패:" +
+                            " orderId = ${command.orderId}, " +
+                            "expected = ${payment!!.orderAmount}, " +
+                            "actual = ${command.orderAmount}"
+                )
+            }
+
+            // 결제 실패 이벤트 발행
+            // 이벤트 아웃박스 저장
+            val eventId = UUID.randomUUID().toString()
+            eventOutBoxWriter.save(
+                eventId = eventId,
+                eventType = EventTopic.PAYMENT_FAILED,
+                relationId = command.orderId
             )
-            throw e
+
+            // 이벤트 발행 (스프링 트랜잭션 리스너)
+            val paymentFailedEvent = PaymentFailedEvent(
+                eventId = eventId,
+                orderId = command.orderId,
+            )
+            applicationEventPublisher.publishEvent(paymentFailedEvent)
+
+            return PaymentProcessResult(
+                txId = command.txId,
+                status = "FAILED"
+            )
         }
 
         // 이벤트 아웃박스 저장

@@ -23,4 +23,12 @@ class Order(
     fun reserveFail() {
         status = OrderStatus.RESERVE_FAILED
     }
+
+    fun pay() {
+        status = OrderStatus.PAID
+    }
+
+    fun payFail() {
+        status = OrderStatus.CANCELLED
+    }
 }

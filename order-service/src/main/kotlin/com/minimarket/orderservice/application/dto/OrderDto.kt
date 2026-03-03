@@ -1,5 +1,6 @@
 package com.minimarket.orderservice.application.dto
 
+import com.minimarket.orderservice.domain.OrderId
 import java.math.BigDecimal
 
 data class OrderCreateCommand(
@@ -22,4 +23,16 @@ data class OrderLineCreateCommand(
 
 data class OrderCreateResult(
     val orderId: String,
+)
+
+data class OrderPaymentSuccessCommand(
+    val orderId: OrderId,
+
+    val eventId: String
+)
+
+data class OrderPaymentFailedCommand(
+    val orderId: OrderId,
+
+    val eventId: String
 )

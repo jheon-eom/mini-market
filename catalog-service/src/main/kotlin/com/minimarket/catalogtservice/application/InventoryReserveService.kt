@@ -9,8 +9,9 @@ import com.minimarket.catalogtservice.application.out.ProductFinder
 import com.minimarket.catalogtservice.application.out.StockManager
 import com.minimarket.catalogtservice.domain.ProductApiException
 import com.minimarket.catalogtservice.domain.ProductErrorCode.NOT_ENOUGH_STOCK
-import com.minimart.common.event.application.InventoryReserveCompleteEvent
 import com.minimart.common.event.kafka.EventTopic
+import com.minimart.common.event.kafka.InventoryFailed
+import com.minimart.common.event.kafka.InventoryReserved
 import com.minimart.common.exception.OutBoxWriteException
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -97,12 +98,22 @@ class InventoryReserveService(
     }
 
     private fun publishApplicationEvent(command: ProductReserveCommand, isSuccess: Boolean) {
-        applicationEventPublisher.publishEvent(
-            InventoryReserveCompleteEvent(
-                eventId = command.eventId,
-                orderId = command.orderId,
-                isSuccess = isSuccess
-            )
-        )
+        when (isSuccess) {
+            true -> {
+                applicationEventPublisher.publishEvent(
+                    InventoryReserved(
+                        orderId = command.orderId,
+                    )
+                )
+            }
+            else -> {
+                applicationEventPublisher.publishEvent(
+                    InventoryFailed(
+                        orderId = command.orderId,
+                    )
+                )
+            }
+        }
+
     }
 }
