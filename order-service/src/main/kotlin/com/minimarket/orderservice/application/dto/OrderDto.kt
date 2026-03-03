@@ -9,6 +9,8 @@ data class OrderCreateCommand(
     val amount: BigDecimal,
 
     val orderLines: List<OrderLineCreateCommand>,
+
+    val shippingInfo: ShippingInfoCreateCommand
 )
 
 data class OrderLineCreateCommand(
@@ -35,4 +37,12 @@ data class OrderPaymentFailedCommand(
     val orderId: OrderId,
 
     val eventId: String
+)
+
+data class ShippingInfoCreateCommand(
+    val receiverName: String,
+
+    val address: String,
+
+    val detailAddress: String,
 )

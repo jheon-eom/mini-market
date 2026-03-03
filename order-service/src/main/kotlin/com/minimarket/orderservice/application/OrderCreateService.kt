@@ -8,6 +8,7 @@ import com.minimarket.orderservice.domain.BuyerId
 import com.minimarket.orderservice.domain.Order
 import com.minimarket.orderservice.domain.OrderLine
 import com.minimarket.orderservice.domain.OrderStatus
+import com.minimarket.orderservice.domain.ShippingInfo
 import com.minimart.common.event.kafka.EventPublisher
 import com.minimart.common.event.kafka.EventTopic
 import com.minimart.common.event.kafka.OrderCreated
@@ -34,7 +35,12 @@ class OrderCreateService(
             },
             amount = command.amount,
             status = OrderStatus.PENDING,
-            orderedAt = LocalDateTime.now()
+            orderedAt = LocalDateTime.now(),
+            shippingInfo = ShippingInfo(
+                receiverName = command.shippingInfo.receiverName,
+                address = command.shippingInfo.address,
+                detailAddress = command.shippingInfo.detailAddress,
+            )
         ).run {
             orderWriter.save(this)
         }

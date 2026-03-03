@@ -8,7 +8,8 @@ import java.util.UUID
 @Component
 class OrderJpaFinder(
     private val orderRepository: OrderRepository,
-    private val orderLineRepository: OrderLineRepository
+    private val orderLineRepository: OrderLineRepository,
+    private val shippingInfoRepository: ShippingInfoRepository
 ): OrderFinder {
     override fun findById(id: String): Order =
         orderRepository.findById(UUID.fromString(id))
@@ -21,6 +22,8 @@ class OrderJpaFinder(
 
         val orderLineEntities = orderLineRepository.findByOrderId(orderEntity.id.toString())
 
-        return orderEntity.toDomain(orderLineEntities.map { it.toDomain() })
+        val shippingInfoEntity = shippingInfoRepository.findByOrderId(orderEntity.id.toString())
+
+        return orderEntity.toDomain(orderLineEntities.map { it.toDomain() }, shippingInfoEntity!!)
     }
 }

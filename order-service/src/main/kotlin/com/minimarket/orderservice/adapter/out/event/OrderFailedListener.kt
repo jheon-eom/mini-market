@@ -27,7 +27,7 @@ class OrderFailedListener(
         logger.info("Handling OrderFailedEvent for orderId: ${event.orderId}")
 
         eventPublisher.publish(
-            topic = EventTopic.ORDER_RESERVED,
+            topic = EventTopic.ORDER_FAILED,
             partitionKey = event.orderId,
             event = OrderFailed(
                 orderId = event.orderId,

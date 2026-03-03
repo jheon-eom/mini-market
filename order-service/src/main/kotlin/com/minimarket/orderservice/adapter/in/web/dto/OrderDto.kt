@@ -2,6 +2,8 @@ package com.minimarket.orderservice.adapter.`in`.web.dto
 
 import com.minimarket.orderservice.application.dto.OrderCreateCommand
 import com.minimarket.orderservice.application.dto.OrderLineCreateCommand
+import com.minimarket.orderservice.application.dto.ShippingInfoCreateCommand
+import com.minimarket.orderservice.domain.ShippingInfo
 import java.math.BigDecimal
 
 data class OrderCreateRequest(
@@ -10,6 +12,8 @@ data class OrderCreateRequest(
     val amount: BigDecimal,
 
     val orderLines: List<OrderLineCreateRequest>,
+
+    val shippingInfo: ShippingInfoRequest,
 ) {
     fun toCommand(): OrderCreateCommand {
         return OrderCreateCommand(
@@ -22,7 +26,12 @@ data class OrderCreateRequest(
                     price = it.price,
                     amount = it.amount,
                 )
-            }
+            },
+            shippingInfo = ShippingInfoCreateCommand(
+                receiverName = shippingInfo.receiverName,
+                address = shippingInfo.address,
+                detailAddress = shippingInfo.detailAddress,
+            )
         )
     }
 }
@@ -39,4 +48,12 @@ data class OrderLineCreateRequest(
 
 data class OrderCreatedResponse(
     val orderId: String,
+)
+
+data class ShippingInfoRequest(
+    val receiverName: String,
+
+    val address: String,
+
+    val detailAddress: String,
 )

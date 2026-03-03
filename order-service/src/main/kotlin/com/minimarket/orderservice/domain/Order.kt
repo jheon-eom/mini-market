@@ -15,6 +15,8 @@ class Order(
     var status: OrderStatus,
 
     val orderedAt: LocalDateTime,
+
+    val shippingInfo: ShippingInfo
 ) {
     fun reserve() {
         status = OrderStatus.RESERVED

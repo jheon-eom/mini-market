@@ -58,6 +58,13 @@ class OrderStatusUpdateService(
                 orderId = command.orderId,
                 buyerId = order.buyerId.value,
                 orderAmount = order.amount,
+                shippingInfo = order.shippingInfo.let {
+                    com.minimart.common.event.kafka.ShippingInfo(
+                        receiverName = it.receiverName,
+                        address = it.address,
+                        detailAddress = it.detailAddress
+                    )
+                }
             )
         )
     }

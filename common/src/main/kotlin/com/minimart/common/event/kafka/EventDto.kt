@@ -62,6 +62,8 @@ data class OrderReserved(
     val buyerId: Long,
 
     val orderAmount: BigDecimal,
+
+    val shippingInfo: ShippingInfo
 ): DomainEvent
 
 data class OrderFailed(
@@ -121,3 +123,11 @@ data class ShipmentFailed(
 
     val shipmentId: String,
 ): DomainEvent
+
+data class ShippingInfo(
+    val receiverName: String,
+
+    val address: String,
+
+    val detailAddress: String,
+)

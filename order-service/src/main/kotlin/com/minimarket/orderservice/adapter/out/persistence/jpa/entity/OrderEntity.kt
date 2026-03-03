@@ -5,6 +5,7 @@ import com.minimarket.orderservice.domain.Order
 import com.minimarket.orderservice.domain.OrderId
 import com.minimarket.orderservice.domain.OrderLine
 import com.minimarket.orderservice.domain.OrderStatus
+import com.minimarket.orderservice.domain.ShippingInfo
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -41,17 +42,27 @@ class OrderEntity(
             lines = emptyList(),
             amount = amount,
             status = OrderStatus.valueOf(status),
-            orderedAt = orderedAt
+            orderedAt = orderedAt,
+            shippingInfo = ShippingInfo(
+                receiverName = "",
+                address = "",
+                detailAddress = ""
+            )
         )
     }
-    fun toDomain(orderLines: List<OrderLine>): Order {
+    fun toDomain(orderLines: List<OrderLine>, shippingInfo: ShippingInfoEntity): Order {
         return Order(
             id = OrderId(id.toString()),
             buyerId = BuyerId(buyerId),
             lines = orderLines,
             amount = amount,
             status = OrderStatus.valueOf(status),
-            orderedAt = orderedAt
+            orderedAt = orderedAt,
+            shippingInfo = ShippingInfo(
+                receiverName = shippingInfo.receiverName,
+                address = shippingInfo.address,
+                detailAddress = shippingInfo.detailAddress
+            )
         )
     }
 }

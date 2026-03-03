@@ -31,7 +31,8 @@ class OrderReservedListener(
             event = OrderReserved(
                 orderId = event.orderId,
                 buyerId = event.buyerId,
-                orderAmount = event.orderAmount
+                orderAmount = event.orderAmount,
+                shippingInfo = event.shippingInfo,
             )
         )
     }
