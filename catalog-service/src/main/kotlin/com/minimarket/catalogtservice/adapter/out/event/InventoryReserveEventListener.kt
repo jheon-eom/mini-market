@@ -1,6 +1,5 @@
 package com.minimarket.catalogtservice.adapter.out.event
 
-import com.minimart.common.event.application.InventoryReserveCompleteEvent
 import com.minimart.common.event.kafka.EventPublisher
 import com.minimart.common.event.kafka.EventTopic
 import com.minimart.common.event.kafka.InventoryFailed
