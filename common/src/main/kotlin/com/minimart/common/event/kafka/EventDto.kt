@@ -11,6 +11,8 @@ data class OrderCreated(
 
     override val eventType: String = EventTopic.ORDER_CREATED,
 
+    override val traceId: String? = null,
+
     val orderId: String,
 
     val buyerId: Long,
@@ -37,6 +39,8 @@ data class InventoryReserved(
 
     override val eventType: String = EventTopic.INVENTORY_RESERVED,
 
+    override val traceId: String? = null,
+
     val orderId: String,
 ): DomainEvent
 
@@ -47,6 +51,8 @@ data class InventoryFailed(
 
     override val eventType: String = EventTopic.INVENTORY_FAILED,
 
+    override val traceId: String? = null,
+
     val orderId: String,
 ): DomainEvent
 
@@ -56,6 +62,8 @@ data class OrderReserved(
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
 
     override val eventType: String = EventTopic.ORDER_RESERVED,
+
+    override val traceId: String? = null,
 
     val orderId: String,
 
@@ -73,6 +81,8 @@ data class OrderFailed(
 
     override val eventType: String = EventTopic.ORDER_FAILED,
 
+    override val traceId: String? = null,
+
     val orderId: String,
 
     val orderLines: List<OrderLine>
@@ -84,6 +94,8 @@ data class PaymentProcessed(
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
 
     override val eventType: String = EventTopic.PAYMENT_PROCESSED,
+
+    override val traceId: String? = null,
 
     val orderId: String,
 
@@ -97,6 +109,8 @@ data class PaymentFailed(
 
     override val eventType: String = EventTopic.PAYMENT_FAILED,
 
+    override val traceId: String? = null,
+
     val orderId: String
 ): DomainEvent
 
@@ -106,6 +120,8 @@ data class ShippingCreated(
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
 
     override val eventType: String = EventTopic.SHIPPING_CREATED,
+
+    override val traceId: String? = null,
 
     val orderId: String,
 

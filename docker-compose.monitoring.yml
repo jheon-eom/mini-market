@@ -1,0 +1,108 @@
+services:
+  # Elasticsearch - 로그 저장소
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: mini-market-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=mini-market-cluster
+      - node.name=mini-market-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - mini-market-network
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Kibana - 로그 시각화 및 대시보드
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: mini-market-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=mini-market-kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Filebeat - 로그 수집기 (Docker 컨테이너 로그 수집)
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: mini-market-filebeat
+    user: root
+    volumes:
+      - ./monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - filebeat-data:/usr/share/filebeat/data
+    command: filebeat -e -strict.perms=false
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - mini-market-network
+
+  # Zipkin - 분산 추적 서버
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: mini-market-zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      - STORAGE_TYPE=elasticsearch
+      - ES_HOSTS=http://elasticsearch:9200
+      - ES_INDEX=zipkin
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9411/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Logstash (Optional) - 고급 로그 파싱 및 변환이 필요한 경우
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:8.11.0
+  #   container_name: mini-market-logstash
+  #   volumes:
+  #     - ./monitoring/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+  #   ports:
+  #     - "5044:5044"
+  #     - "9600:9600"
+  #   environment:
+  #     - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_healthy
+  #   networks:
+  #     - mini-market-network
+
+networks:
+  mini-market-network:
+    external: true
+
+volumes:
+  elasticsearch-data:
+    driver: local
+  filebeat-data:
+    driver: local

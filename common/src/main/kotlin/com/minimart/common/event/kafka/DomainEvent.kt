@@ -9,4 +9,5 @@ interface DomainEvent {
     val eventId: String
     val occurredAt: LocalDateTime
     val eventType: String
+    val traceId: String?  // 분산 추적을 위한 Trace ID
 }

@@ -1,0 +1,99 @@
+filebeat.inputs:
+  # Docker 컨테이너 로그 수집
+  - type: container
+    paths:
+      - '/var/lib/docker/containers/*/*.log'
+
+    # JSON 로그 파싱
+    json.keys_under_root: true
+    json.add_error_key: true
+    json.message_key: message
+
+    # 필드 추가
+    fields:
+      log_source: docker
+    fields_under_root: true
+
+    # 멀티라인 로그 처리 (스택 트레이스 등)
+    multiline.type: pattern
+    multiline.pattern: '^\s'
+    multiline.negate: false
+    multiline.match: after
+
+    # 컨테이너 메타데이터 추가
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+
+      # 불필요한 필드 제거
+      - drop_fields:
+          fields: ["agent", "ecs", "input", "log.offset", "log.file.path"]
+          ignore_missing: true
+
+      # 서비스 이름 추출 (컨테이너 이름에서)
+      - script:
+          lang: javascript
+          source: >
+            function process(event) {
+                var containerName = event.Get("container.name");
+                if (containerName) {
+                    if (containerName.includes("account-service")) {
+                        event.Put("service_name", "account-service");
+                    } else if (containerName.includes("catalog-service")) {
+                        event.Put("service_name", "catalog-service");
+                    } else if (containerName.includes("order-service")) {
+                        event.Put("service_name", "order-service");
+                    } else if (containerName.includes("payment-service")) {
+                        event.Put("service_name", "payment-service");
+                    } else if (containerName.includes("shipping-service")) {
+                        event.Put("service_name", "shipping-service");
+                    }
+                }
+            }
+
+# Elasticsearch 출력 설정
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  index: "mini-market-logs-%{+yyyy.MM.dd}"
+
+  # Index lifecycle management 비활성화 (수동 인덱스 패턴 사용)
+  ilm.enabled: false
+
+  # 인덱스 템플릿 설정
+  template.name: "mini-market-logs"
+  template.pattern: "mini-market-logs-*"
+  template.enabled: true
+  template.overwrite: true
+
+  # 벌크 설정
+  bulk_max_size: 50
+  worker: 2
+
+  # 재시도 설정
+  max_retries: 3
+  backoff.init: 1s
+  backoff.max: 60s
+
+# 로깅 설정
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+# 모니터링 설정
+monitoring.enabled: false
+
+# HTTP 엔드포인트 (헬스 체크용)
+http.enabled: true
+http.host: 0.0.0.0
+http.port: 5066
+
+# 프로세서 설정
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
