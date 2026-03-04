@@ -16,6 +16,4 @@ object EventTopic {
     const val PAYMENT_FAILED = "payment.failed" // 결제 처리 실패
 
     const val SHIPPING_CREATED = "shipping.created" // 배송 생성
-
-    const val SHIPPING_FAILED = "shipping.failed" // 배송 생성 실패
 }

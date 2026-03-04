@@ -100,7 +100,7 @@ data class PaymentFailed(
     val orderId: String
 ): DomainEvent
 
-data class ShipmentCreated(
+data class ShippingCreated(
     override val eventId: String = UUID.randomUUID().toString(),
 
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
@@ -109,19 +109,7 @@ data class ShipmentCreated(
 
     val orderId: String,
 
-    val shipmentId: String,
-): DomainEvent
-
-data class ShipmentFailed(
-    override val eventId: String = UUID.randomUUID().toString(),
-
-    override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
-    override val eventType: String = EventTopic.SHIPPING_FAILED,
-
-    val orderId: String,
-
-    val shipmentId: String,
+    val shippingId: Long,
 ): DomainEvent
 
 data class ShippingInfo(
