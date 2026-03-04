@@ -1,0 +1,49 @@
+services:
+  account-db:
+    image: mysql:8.0
+    container_name: account-mysql
+    environment:
+      MYSQL_DATABASE: minimarket_account_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: account_user
+      MYSQL_PASSWORD: account_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - account-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  account-redis:
+    image: redis:7-alpine
+    container_name: account-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - account-redis-data:/data
+    networks:
+      - mini-market-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  account-db-data:
+    driver: local
+  account-redis-data:
+    driver: local
+
+networks:
+  mini-market-network:
+    driver: bridge
