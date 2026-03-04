@@ -1,12 +1,15 @@
-version: '3.8'
+# Mini-Market Event Infrastructure
+# Apache Kafka for event-driven communication
 
 services:
+  # Kafka Broker
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: mini-market-kafka
     ports:
       - "9092:9092"
       - "9093:9093"
+      - "29092:29092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: 'broker,controller'
@@ -32,6 +35,7 @@ services:
       retries: 10
       start_period: 30s
 
+  # Kafka UI
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: mini-market-kafka-ui
@@ -42,7 +46,7 @@ services:
       - "8989:8080"
     environment:
       DYNAMIC_CONFIG_ENABLED: "true"
-      KAFKA_CLUSTERS_0_NAME: mini-market
+      KAFKA_CLUSTERS_0_NAME: mini-market-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     networks:
       - mini-market-network
@@ -53,3 +57,4 @@ networks:
 
 volumes:
   kafka-data:
+    driver: local

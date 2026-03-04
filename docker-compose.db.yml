@@ -1,0 +1,177 @@
+# Mini-Market Database & Cache Infrastructure
+# MySQL databases and Redis caches for all microservices
+
+services:
+  # Account Database
+  account-db:
+    image: mysql:8.0
+    container_name: mini-market-account-db
+    environment:
+      MYSQL_DATABASE: minimarket_account_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: account_user
+      MYSQL_PASSWORD: account_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - account-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Account Redis
+  account-redis:
+    image: redis:7-alpine
+    container_name: mini-market-account-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - account-redis-data:/data
+    networks:
+      - mini-market-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Catalog Database
+  catalog-db:
+    image: mysql:8.0
+    container_name: mini-market-catalog-db
+    environment:
+      MYSQL_DATABASE: minimarket_product_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: product_user
+      MYSQL_PASSWORD: product_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - catalog-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Catalog Redis
+  catalog-redis:
+    image: redis:7-alpine
+    container_name: mini-market-catalog-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - catalog-redis-data:/data
+    networks:
+      - mini-market-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Order Database
+  order-db:
+    image: mysql:8.0
+    container_name: mini-market-order-db
+    environment:
+      MYSQL_DATABASE: minimarket_order_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: order_user
+      MYSQL_PASSWORD: order_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - order-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Payment Database
+  payment-db:
+    image: mysql:8.0
+    container_name: mini-market-payment-db
+    environment:
+      MYSQL_DATABASE: minimarket_payment_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: payment_user
+      MYSQL_PASSWORD: payment_password
+    ports:
+      - "3309:3306"
+    volumes:
+      - payment-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Shipping Database
+  shipping-db:
+    image: mysql:8.0
+    container_name: mini-market-shipping-db
+    environment:
+      MYSQL_DATABASE: minimarket_shipping_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: shipping_user
+      MYSQL_PASSWORD: shipping_password
+    ports:
+      - "3310:3306"
+    volumes:
+      - shipping-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mini-market-network:
+    driver: bridge
+
+volumes:
+  account-db-data:
+    driver: local
+  account-redis-data:
+    driver: local
+  catalog-db-data:
+    driver: local
+  catalog-redis-data:
+    driver: local
+  order-db-data:
+    driver: local
+  payment-db-data:
+    driver: local
+  shipping-db-data:
+    driver: local

@@ -1,0 +1,386 @@
+services:
+  # Account Service
+  account-service:
+    build:
+      context: .
+      dockerfile: account-service/Dockerfile
+    container_name: mini-market-account-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=account-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://account-db:3306/minimarket_account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=account_user
+      - SPRING_DATASOURCE_PASSWORD=account_password
+      - SPRING_DATA_REDIS_HOST=account-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8080:8080"
+    depends_on:
+      account-db:
+        condition: service_healthy
+      account-redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Catalog Service
+  catalog-service:
+    build:
+      context: .
+      dockerfile: catalog-service/Dockerfile
+    container_name: mini-market-catalog-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=catalog-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://catalog-db:3306/minimarket_product_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=product_user
+      - SPRING_DATASOURCE_PASSWORD=product_password
+      - SPRING_DATA_REDIS_HOST=catalog-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8081:8081"
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+      catalog-redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Order Service
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: mini-market-order-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=order-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://order-db:3306/minimarket_order_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=order_user
+      - SPRING_DATASOURCE_PASSWORD=order_password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8082:8082"
+    depends_on:
+      order-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Payment Service
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    container_name: mini-market-payment-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=payment-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://payment-db:3306/minimarket_payment_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=payment_user
+      - SPRING_DATASOURCE_PASSWORD=payment_password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8083:8083"
+    depends_on:
+      payment-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Shipping Service
+  shipping-service:
+    build:
+      context: .
+      dockerfile: shipping-service/Dockerfile
+    container_name: mini-market-shipping-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=shipping-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://shipping-db:3306/minimarket_shipping_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=shipping_user
+      - SPRING_DATASOURCE_PASSWORD=shipping_password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8084:8084"
+    depends_on:
+      shipping-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Account Database
+  account-db:
+    image: mysql:8.0
+    container_name: mini-market-account-db
+    environment:
+      MYSQL_DATABASE: minimarket_account_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: account_user
+      MYSQL_PASSWORD: account_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - account-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Account Redis
+  account-redis:
+    image: redis:7-alpine
+    container_name: mini-market-account-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - account-redis-data:/data
+    networks:
+      - mini-market-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Catalog Database
+  catalog-db:
+    image: mysql:8.0
+    container_name: mini-market-catalog-db
+    environment:
+      MYSQL_DATABASE: minimarket_product_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: product_user
+      MYSQL_PASSWORD: product_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - catalog-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Catalog Redis
+  catalog-redis:
+    image: redis:7-alpine
+    container_name: mini-market-catalog-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - catalog-redis-data:/data
+    networks:
+      - mini-market-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Order Database
+  order-db:
+    image: mysql:8.0
+    container_name: mini-market-order-db
+    environment:
+      MYSQL_DATABASE: minimarket_order_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: order_user
+      MYSQL_PASSWORD: order_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - order-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Payment Database
+  payment-db:
+    image: mysql:8.0
+    container_name: mini-market-payment-db
+    environment:
+      MYSQL_DATABASE: minimarket_payment_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: payment_user
+      MYSQL_PASSWORD: payment_password
+    ports:
+      - "3309:3306"
+    volumes:
+      - payment-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Shipping Database
+  shipping-db:
+    image: mysql:8.0
+    container_name: mini-market-shipping-db
+    environment:
+      MYSQL_DATABASE: minimarket_shipping_db
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: shipping_user
+      MYSQL_PASSWORD: shipping_password
+    ports:
+      - "3310:3306"
+    volumes:
+      - shipping-db-data:/var/lib/mysql
+    networks:
+      - mini-market-network
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka (from existing docker-compose.yml)
+  kafka:
+    image: apache/kafka:latest
+    container_name: mini-market-kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      CLUSTER_ID: mini-market-kafka-cluster
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: mini-market-kafka-ui
+    ports:
+      - "8989:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: mini-market-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "true"
+    depends_on:
+      - kafka
+    networks:
+      - mini-market-network
+
+networks:
+  mini-market-network:
+    driver: bridge
+
+volumes:
+  account-db-data:
+    driver: local
+  account-redis-data:
+    driver: local
+  catalog-db-data:
+    driver: local
+  catalog-redis-data:
+    driver: local
+  order-db-data:
+    driver: local
+  payment-db-data:
+    driver: local
+  shipping-db-data:
+    driver: local
+  kafka-data:
+    driver: local

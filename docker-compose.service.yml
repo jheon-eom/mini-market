@@ -1,0 +1,141 @@
+# Mini-Market Microservices
+# Spring Boot application services
+
+services:
+  # Account Service
+  account-service:
+    build:
+      context: .
+      dockerfile: account-service/Dockerfile
+    container_name: mini-market-account-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=account-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://account-db:3306/minimarket_account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=account_user
+      - SPRING_DATASOURCE_PASSWORD=account_password
+      - SPRING_DATA_REDIS_HOST=account-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8080:8080"
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Catalog Service
+  catalog-service:
+    build:
+      context: .
+      dockerfile: catalog-service/Dockerfile
+    container_name: mini-market-catalog-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=catalog-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://catalog-db:3306/minimarket_product_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=product_user
+      - SPRING_DATASOURCE_PASSWORD=product_password
+      - SPRING_DATA_REDIS_HOST=catalog-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8081:8081"
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Order Service
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: mini-market-order-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=order-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://order-db:3306/minimarket_order_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=order_user
+      - SPRING_DATASOURCE_PASSWORD=order_password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8082:8082"
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Payment Service
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    container_name: mini-market-payment-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=payment-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://payment-db:3306/minimarket_payment_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=payment_user
+      - SPRING_DATASOURCE_PASSWORD=payment_password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8083:8083"
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Shipping Service
+  shipping-service:
+    build:
+      context: .
+      dockerfile: shipping-service/Dockerfile
+    container_name: mini-market-shipping-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=shipping-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://shipping-db:3306/minimarket_shipping_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=shipping_user
+      - SPRING_DATASOURCE_PASSWORD=shipping_password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    ports:
+      - "8084:8084"
+    networks:
+      - mini-market-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  mini-market-network:
+    driver: bridge
