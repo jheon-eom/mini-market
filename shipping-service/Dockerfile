@@ -1,34 +1,25 @@
 # Multi-stage build
 FROM gradle:8.5-jdk17 AS builder
 
-WORKDIR /app
+WORKDIR /build
 
-# Copy gradle files
-COPY build.gradle.kts settings.gradle.kts ./
-COPY gradle ./gradle
-COPY gradlew ./
+# Copy entire project structure
+COPY . .
 
-# Copy common module first (for better caching)
-COPY common ../common
-
-# Copy source code
-COPY shipping-service/build.gradle.kts ./
-COPY shipping-service/src ./src
-
-# Build application
-RUN gradle clean build -x test --no-daemon
+# Build only shipping-service
+RUN ./gradlew :shipping-service:build -x test --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
 # Add non-root user
-RUN addgroup -S spring && adduser -S spring -G spring
+RUN groupadd -r spring && useradd -r -g spring spring
 USER spring:spring
 
 # Copy jar from builder
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /build/shipping-service/build/libs/*.jar app.jar
 
 # Environment variables with defaults
 ENV SPRING_PROFILES_ACTIVE=prod

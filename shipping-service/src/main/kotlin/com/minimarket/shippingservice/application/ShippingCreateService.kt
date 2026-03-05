@@ -9,6 +9,7 @@ import com.minimarket.shippingservice.domain.Shipping
 import com.minimarket.shippingservice.domain.ShippingStatus
 import com.minimart.common.event.kafka.EventTopic
 import com.minimart.common.event.kafka.ShippingCreated
+import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,8 +22,13 @@ class ShippingCreateService(
     private val shippingWriter: ShippingWriter,
     private val eventPublisher: ApplicationEventPublisher
 ): ShippingCreateUseCase {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     override fun create(command: ShippingCreateCommand) {
+        logger.info("[Shipping] 배송 생성 시작 - orderId: ${command.orderId}, receiver: ${command.receiverName}")
+
         if (eventOutBoxFinder.existsByEventId(command.eventId)) {
+            logger.info("[Shipping] 중복 이벤트 무시 - eventId: ${command.eventId}")
             return
         }
 
@@ -50,5 +56,7 @@ class ShippingCreateService(
                 shippingId = savedShipping.id.value
             )
         )
+
+        logger.info("[Shipping] 배송 생성 완료, SHIPPING_CREATED 이벤트 발행 - orderId: ${command.orderId}, shippingId: ${savedShipping.id.value}, status: ${savedShipping.status}")
     }
 }

@@ -87,7 +87,10 @@ class OrderStatusUpdateService(
     }
 
     override fun updateToPaymentSuccess(command: OrderPaymentSuccessCommand) {
+        logger.info("[Order] 결제 성공 처리 시작 - orderId: ${command.orderId.value}")
+
         if (eventOutBoxReader.existByEventId(command.eventId)) {
+            logger.info("[Order] 중복 이벤트 무시 - eventId: ${command.eventId}")
             return
         }
 
@@ -101,10 +104,15 @@ class OrderStatusUpdateService(
             eventType = EventTopic.PAYMENT_PROCESSED,
             relationId = command.orderId.value
         )
+
+        logger.info("[Order] 주문 결제 완료 처리 - orderId: ${command.orderId.value}, status: PAID")
     }
 
     override fun updateToPaymentFailed(command: OrderPaymentFailedCommand) {
+        logger.info("[Order] 결제 실패 처리 시작 - orderId: ${command.orderId.value}")
+
         if (eventOutBoxReader.existByEventId(command.eventId)) {
+            logger.info("[Order] 중복 이벤트 무시 - eventId: ${command.eventId}")
             return
         }
 
@@ -133,5 +141,7 @@ class OrderStatusUpdateService(
                 }
             )
         )
+
+        logger.info("[Order] 주문 결제 실패 처리 완료, ORDER_FAILED 이벤트 발행 - orderId: ${command.orderId.value}")
     }
 }

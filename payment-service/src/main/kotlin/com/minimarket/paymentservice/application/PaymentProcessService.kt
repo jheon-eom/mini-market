@@ -8,9 +8,9 @@ import com.minimarket.paymentservice.application.out.PaymentFinder
 import com.minimarket.paymentservice.application.out.PaymentWriter
 import com.minimarket.paymentservice.domain.PaymentApiException
 import com.minimarket.paymentservice.domain.PaymentErrorCode
-import com.minimart.common.event.application.PaymentFailedEvent
-import com.minimart.common.event.application.PaymentProcessedEvent
 import com.minimart.common.event.kafka.EventTopic
+import com.minimart.common.event.kafka.PaymentFailed
+import com.minimart.common.event.kafka.PaymentProcessed
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -62,7 +62,7 @@ class PaymentProcessService(
             )
 
             // 이벤트 발행 (스프링 트랜잭션 리스너)
-            val paymentFailedEvent = PaymentFailedEvent(
+            val paymentFailedEvent = PaymentFailed(
                 eventId = eventId,
                 orderId = command.orderId,
             )
@@ -83,7 +83,7 @@ class PaymentProcessService(
         )
 
         // 이벤트 발행 (스프링 트랜잭션 리스너)
-        val paymentProcessedEvent = PaymentProcessedEvent(
+        val paymentProcessedEvent = PaymentProcessed(
             eventId = eventId,
             orderId = command.orderId,
             paymentId = payment.paymentId!!.value.toString()
