@@ -13,6 +13,8 @@ data class OrderCreated(
 
     override val traceId: String? = null,
 
+    override val spanId: String? = null,
+
     val orderId: String,
 
     val buyerId: Long,
@@ -34,97 +36,70 @@ data class OrderLine(
 
 data class InventoryReserved(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.INVENTORY_RESERVED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String,
 ): DomainEvent
 
 data class InventoryFailed(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.INVENTORY_FAILED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String,
 ): DomainEvent
 
 data class OrderReserved(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.ORDER_RESERVED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String,
-
     val buyerId: Long,
-
     val orderAmount: BigDecimal,
-
     val shippingInfo: ShippingInfo
 ): DomainEvent
 
 data class OrderFailed(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.ORDER_FAILED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String,
-
     val orderLines: List<OrderLine>
 ): DomainEvent
 
 data class PaymentProcessed(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.PAYMENT_PROCESSED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String,
-
     val paymentId: String,
 ): DomainEvent
 
 data class PaymentFailed(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.PAYMENT_FAILED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String
 ): DomainEvent
 
 data class ShippingCreated(
     override val eventId: String = UUID.randomUUID().toString(),
-
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-
     override val eventType: String = EventTopic.SHIPPING_CREATED,
-
     override val traceId: String? = null,
-
+    override val spanId: String? = null,
     val orderId: String,
-
     val shippingId: Long,
 ): DomainEvent
 

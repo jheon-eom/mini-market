@@ -11,6 +11,4 @@ interface ProductFinder {
     fun findById(id: ProductId): Product
 
     fun findStockById(productId: Long): Int
-
-    fun findAllByOrderId(orderId: String): List<Product>
 }

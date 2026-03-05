@@ -63,8 +63,4 @@ class ProductJpaFinder(
         productRepository.findById(productId)
             .orElseThrow { ProductApiException(NOT_FOUND) }
             .stock
-
-    override fun findAllByOrderId(orderId: String): List<Product> {
-        return productRepository.findAllByOrderId(orderId)
-    }
 }

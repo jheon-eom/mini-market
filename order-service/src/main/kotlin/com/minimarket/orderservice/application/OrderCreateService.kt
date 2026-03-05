@@ -12,6 +12,7 @@ import com.minimarket.orderservice.domain.ShippingInfo
 import com.minimart.common.event.kafka.EventPublisher
 import com.minimart.common.event.kafka.EventTopic
 import com.minimart.common.event.kafka.OrderCreated
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -21,8 +22,11 @@ class OrderCreateService(
     private val orderWriter: OrderWriter,
     private val eventPublisher: EventPublisher
 ): OrderUseCase {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     @Transactional
     override fun create(command: OrderCreateCommand): OrderCreateResult {
+        logger.info("[Order] 주문 생성 시작 - buyerId: ${command.buyerId}, amount: ${command.amount}, items: ${command.orderLines.size}")
         val savedOrder = Order(
             buyerId = BuyerId(command.buyerId),
             lines = command.orderLines.map {
@@ -45,6 +49,8 @@ class OrderCreateService(
             orderWriter.save(this)
         }
 
+        logger.info("[Order] 주문 저장 완료 - orderId: ${savedOrder.id!!.value}, status: ${savedOrder.status}")
+
         // 주문 생성 이벤트 발행
         val event = OrderCreated(
             orderId = savedOrder.id!!.value,
@@ -65,6 +71,8 @@ class OrderCreateService(
             savedOrder.id.value,
             event
         )
+
+        logger.info("[Order] ORDER_CREATED 이벤트 발행 완료 - orderId: ${savedOrder.id.value}")
 
         return OrderCreateResult(
             orderId = savedOrder.id.value

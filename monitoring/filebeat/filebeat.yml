@@ -55,24 +55,18 @@ filebeat.inputs:
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   index: "mini-market-logs-%{+yyyy.MM.dd}"
-
-  # Index lifecycle management 비활성화 (수동 인덱스 패턴 사용)
   ilm.enabled: false
-
-  # 인덱스 템플릿 설정
-  template.name: "mini-market-logs"
-  template.pattern: "mini-market-logs-*"
-  template.enabled: true
-  template.overwrite: true
-
-  # 벌크 설정
   bulk_max_size: 50
   worker: 2
-
-  # 재시도 설정
   max_retries: 3
   backoff.init: 1s
   backoff.max: 60s
+
+# 인덱스 템플릿 설정
+setup.template.name: "mini-market-logs"
+setup.template.pattern: "mini-market-logs-*"
+setup.template.enabled: true
+setup.template.overwrite: true
 
 # 로깅 설정
 logging.level: info

@@ -5,23 +5,6 @@ spring:
   application:
     name: shipping-service
 
-  # Distributed Tracing with Sleuth & Zipkin
-  sleuth:
-    sampler:
-      probability: 1.0
-    baggage:
-      remote-fields:
-        - traceId
-        - spanId
-      correlation-fields:
-        - traceId
-        - spanId
-  zipkin:
-    base-url: ${SPRING_ZIPKIN_BASE_URL:http://zipkin:9411}
-    sender:
-      type: web
-    service:
-      name: ${spring.application.name}
 
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
@@ -61,10 +44,9 @@ jwt:
   refresh-token-validity: 604800000
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+    export:
+      zipkin:
+        endpoint: ${SPRING_ZIPKIN_BASE_URL:http://zipkin:9411}/api/v2/spans

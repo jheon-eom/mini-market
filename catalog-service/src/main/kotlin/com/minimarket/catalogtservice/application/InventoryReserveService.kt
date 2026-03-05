@@ -13,6 +13,7 @@ import com.minimart.common.event.kafka.EventTopic
 import com.minimart.common.event.kafka.InventoryFailed
 import com.minimart.common.event.kafka.InventoryReserved
 import com.minimart.common.exception.OutBoxWriteException
+import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,11 +27,15 @@ class InventoryReserveService(
     private val eventOutBoxWriter: EventOutBoxWriter,
     private val applicationEventPublisher: ApplicationEventPublisher
 ): ProductReserveUseCase {
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
     override fun reserve(command: ProductReserveCommand) {
+        logger.info("[Catalog] 재고 예약 시작 - orderId: ${command.orderId}, items: ${command.items.size}")
+
         // 이벤트 키 멱등성 검사
         if (eventOutBoxFinder.existsByEventId(command.eventId)) {
+            logger.info("[Catalog] 중복 이벤트 무시 - eventId: ${command.eventId}")
             return
         }
 
@@ -44,10 +49,12 @@ class InventoryReserveService(
                 reserveStock(it)
                 reservedItems.add(it)
             } catch (e: ProductApiException) {
+                logger.warn("[Catalog] 재고 부족으로 예약 실패 - orderId: ${command.orderId}, productId: ${it.productId}, error: ${e.message}")
                 rollbackStocks(reservedItems)
                 try {
                     writeOutBox(command, EventTopic.INVENTORY_FAILED)
                     publishApplicationEvent(command, false)
+                    logger.info("[Catalog] INVENTORY_FAILED 이벤트 발행 - orderId: ${command.orderId}")
                     return
                 } catch (e: Exception) {
                     throw OutBoxWriteException(e)
@@ -58,7 +65,9 @@ class InventoryReserveService(
         try {
             writeOutBox(command, EventTopic.INVENTORY_RESERVED)
             publishApplicationEvent(command, true)
+            logger.info("[Catalog] 재고 예약 성공, INVENTORY_RESERVED 이벤트 발행 - orderId: ${command.orderId}, reserved items: ${reservedItems.size}")
         } catch (e: Exception) {
+            logger.error("[Catalog] OutBox 쓰기 실패, 재고 롤백 - orderId: ${command.orderId}", e)
             rollbackStocks(reservedItems)
             throw OutBoxWriteException(e)
         }
