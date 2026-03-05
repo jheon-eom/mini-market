@@ -4,7 +4,9 @@
 
 Mini-Market는 Kotlin과 Spring Boot로 구축된 이벤트 기반 마이크로서비스 아키텍처의 전자상거래 플랫폼입니다.
 
-## 아키텍처
+## 시스템 아키텍처
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/15a52a77-1b1d-488e-a821-8bf93985cf1f" />
+
 
 ### 마이크로서비스
 - **Account Service** (8080): 사용자 계정 및 인증 관리
